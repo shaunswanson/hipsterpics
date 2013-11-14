@@ -242,6 +242,7 @@ class searcher:
         return self.normalizescores(scores)
 
 bottle.debug(True)
+# (TODO) run searchengine.py on server
 bottle.run(host='localhost', port=8083) # (TODO) change this away from localhost to allcatseverything.net
 
 
