@@ -1,6 +1,6 @@
 bottle
 BeautifulSoup4==4.3.2
 beaker
-urllib2
+urllib3
 pymongo
 urlparse
