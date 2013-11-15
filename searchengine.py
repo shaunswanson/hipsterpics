@@ -56,10 +56,10 @@ class crawler:
         mywords = self.db.words.find()
         for myword1 in mywords:
             for myword2 in mywords:
-                for myurl1 in myword1['urls']:
-                    for myurl2 in myword2['urls']:
-                        if myurl1['url'] == myurl2['url']:
-                            print "pair: " + myword1['word'] + " " + myword2['word'] + '\n'
+                for myurl1 in myword1['picurls']:
+                    for myurl2 in myword2['picurls']:
+                        if myurl1['picurl'] == myurl2['picurl']:
+                            print "pair: " + str(myword1['word')] + " " + str(myword2['word']) + '\n'
 
     # Close the database
     def __del__(self):
