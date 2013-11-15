@@ -11,7 +11,7 @@ is due to input from a click-tracking, artificial neural network. Users are enco
 ranked results, whichever looks the most "hipster-looking."
 
 Theoretically, with enough ongoing clicks, this neural network could become the best predictor of evolving trends within 
-the "hipster" community. To monetize, Ad content will be sold, its focus being the opposite of observed trendy trends.
+the "hipster" community. To monetize, ad content will be sold, its focus being the opposite of observed trendy trends.
 
 NOTE: Instances of the crawlers included in this project are currently running to fill the database. 
 In the meantime, expect many queries to return few or no results.
