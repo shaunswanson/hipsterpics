@@ -1,11 +1,9 @@
 '''
 GLOBAL TODO:
 
-- clean up html before running it through beautiful soup using html5lib (http://stackoverflow.com/questions/3198874/malformed-start-tag-error-python-beautifulsoup-and-sipie-ubuntu-10-04)
 '''
 
 import urllib2
-from bs4 import BeautifulSoup
 from urlparse import urljoin
 import pymongo
 import re
@@ -59,11 +57,13 @@ class crawler:
         self.conn.close()
 
     # Index an individual page
-    def addtoindex(self, soup, picurl):
+    def addtoindex(self, content, picurl):
         if self.isindexed(picurl): return 
+        if content is None: return
 
         # Get the individual words
-        text = self.gettextonly(soup)
+        text = content
+        print "text: " + str(text) + '\n'
         words = self.separatewords(text)
         print "words: " + str(words) + '\n'
 
@@ -102,19 +102,6 @@ class crawler:
                 print "created db_word: " + str(wordJSON) + '\n'
                 self.db.words.insert(wordJSON)
 
-    # Extract the text from an HTML page (no tags)
-    def gettextonly(self, soup):
-        v = soup.string 
-        if v == None:
-            c = soup.contents
-            resulttext = ''
-            for t in c:
-                subtext = self.gettextonly(t)
-                resulttext += subtext + '\n'
-            return resulttext
-        else:
-            return v.strip()
-
     # Separate the words by any non-whitespace character
     def separatewords(self, text):
         splitter = re.compile('\\W*') # (TODO) improve this (possibly use a stemming algorithm to remove suffixes from words)
@@ -142,14 +129,15 @@ class crawler:
         for i in range(depth):
             newpages = set()
             for page in pages:
+                # (TODO) will freeze after this prints sometimes...
                 print "<-- crawling " + str(page) + '\n' 
-                try:
-                    c = urllib2.urlopen(page)
-                except:
-                    print "1 - Could not open %s" % page
-                    continue
                 try: 
                     driver.get(page)
+                    comment_content_elements = driver.find_elements_by_xpath('//div[contains(@id,"captions")]')
+                    comment_content = None
+                    # (TODO) may be missing this quite often
+                    if len(comment_content_elements) > 0:
+                        comment_content = comment_content_elements[0].text
                     picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/img')
                     if len(picurls) < 1:
                         picurls = driver.find_elements_by_xpath('//div[contains(@id,"image")]/div/img')
@@ -158,7 +146,7 @@ class crawler:
                     if len(picurls) > 0:
                         realpicurl = picurls[0].get_attribute('src')
                     else:
-                        realpicurl = None
+                        realpicurl = None 
                     if realpicurl is not None:
                         if realpicurl.find("gif") != -1:
                             realpicurl = None
@@ -170,12 +158,12 @@ class crawler:
                         #print "reallink: " + str(reallink) + '\n'
                         newpages.add(reallink)
                 except:
-                    print "2 - Could not open %s" % page
-                    continue
+                    print "Could not open %s" % page
+                    #continue
+                    raise # FOR TESTING
 
-                soup = BeautifulSoup(c.read())
                 if realpicurl is not None:
-                    self.addtoindex(soup, realpicurl)
+                    self.addtoindex(comment_content, realpicurl)
 
             pages = newpages
             print "pages: " + str(pages) + '\n'
