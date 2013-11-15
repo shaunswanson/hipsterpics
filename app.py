@@ -5,6 +5,7 @@ import bottle
 import searchengine
 import nn
 import beaker.middleware
+import os
 
 mynet = nn.searchnet()
 
@@ -39,8 +40,20 @@ def resultspage():
     print "mywords: " + str(mywords) + '\n'
     return bottle.template('results', words = mywords, urls = myurls)
 
+#API
+
+@bottle.route('/trainquery')
+def trainqueryhandler():
+    s = bottle.request.environ.get('beaker.session')
+    winnerurl = bottle.request.query['winnerurl']
+    print s['mywords'], s['myurls'], winnerurl
+    mynet.trainquery(s['mywords'], s['myurls'], winnerurl)
+    # return "{'status':'success'}"
+    bottle.redirect('/')
+
 bottle.debug(True)
-bottle.run(app=app, host='localhost', port=8082) # (TODO) change this away from localhost to allcatseverything.net
+port = int(os.environ.get("PORT", 8082))
+bottle.run(app=app, host='0.0.0.0', port=port) # (TODO) change this away from localhost to allcatseverything.net
 
 
 

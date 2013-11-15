@@ -10,13 +10,8 @@ from bs4 import BeautifulSoup
 from urlparse import urljoin
 import pymongo
 import re
-import nn
-#import bottle
-#import pdb # FOR TESTING
 
 ignorewords = set(['the','of', 'a', 'to', 'and','in','is','it']) 
-mynet = nn.searchnet()
-
 
 class crawler:
     # Initialize the crawler with the catbase database
@@ -24,7 +19,7 @@ class crawler:
         # (TODO) connect to non-local mongod instance: http://docs.mongodb.org/manual/reference/connection-string/
         connection_string = "mongodb://localhost"
         self.conn = pymongo.MongoClient(connection_string)
-        self.db = self.conn.catbase
+        self.db = self.conn.catbasetest # FOR TESTING
 
     # Close the database
     def __del__(self):
@@ -135,111 +130,6 @@ class crawler:
                         self.addlinkref(page, url, linkText)
 
             pages = newpages
-
-class searcher:
-    def __init__(self):
-        # (TODO) connect to non-local mongod instance: http://docs.mongodb.org/manual/reference/connection-string/
-        connection_string = "mongodb://localhost"
-        self.conn = pymongo.MongoClient(connection_string)
-        self.db = self.conn.catbase
-
-    def __del__(self):
-        self.conn.close()
-
-    def getunrankedmatches(self, q):
-
-        results = []
-        finalresults = set()
-        urls = set()
-
-        # Split the words by spaces
-        words = q.split(' ')
-        #words.append('cat') #(TODO) when crawling enough add this back in
-
-        print "[getunrankedmatches] words: " + str(words) + '\n'
-        for word in words:
-            db_word = self.db.words.find_one({'word': word}) # assumes there's never a duplicate for a given word
-            if db_word is not None:
-                for db_url in db_word['urls']:
-                    results.append(db_url)
-                    urls.add(db_url['url'])
-
-        print "[getunrankedmatches] results: " + str(results) + '\n'
-        for result in results:
-            for url in urls:
-                counter = 0
-                for i in range(len(results)):
-                    if results[i]['url'] == url:
-                        counter += 1
-                if counter == len(words):
-                    finalresults.add(url)
-
-        print "[getunrankedmatches] list(finalresults): " + str(list(finalresults)) + '\n'
-        return list(finalresults)
-
-    # take a dictionary of urls and scores and return a new dictionary with the same urls, but with scores between 0 and 1
-    def normalizescores(self, scores, smallIsBetter = 0):
-        vsmall = 0.00001 # Avoid division by zero errors
-        if smallIsBetter:
-            minscore = min(scores.values())
-            return dict([(u, float(minscore)/max(vsmall,1)) for (u,l) in scores.items()])
-        else:
-            if scores is not None:
-                maxscore = max(scores.values())
-            else:
-                maxscore = 0
-            if maxscore == 0: maxscore = vsmall
-            print "[normalizescores] normalizescores(scores): " + str(dict([(u, float(c)/maxscore) for (u,c) in scores.items()])) + '\n'
-            return dict([(u, float(c)/maxscore) for (u,c) in scores.items()])
-
-    def getscoredlist(self, words, results):
-        totalscores = dict([(result, 0.0) for result in results])
-
-        # (TODO) add more scores weighted with the neural network score
-        weights = [(1.0, self.frequencyscore(words, results))] #(1.0, self.nnscore(words, results)) 
-
-        print "[getscoredlist] weights: " + str(weights) + '\n'
-        for (weight, scores) in weights:
-            for url in totalscores:
-                totalscores[url] += weight*scores[url]
-
-        print "[getscoredlist] totalscores: " + str(totalscores) + '\n'
-        return totalscores
-
-    def query(self, q):
-        results = self.getunrankedmatches(q)
-        print "[query] results" + str(results) + '\n'
-        words = q.split(' ')
-        scores = self.getscoredlist(words, results)
-        rankedscores = sorted([(score, url) for (url, score) in scores.items()], reverse=1)
-        for (score, url) in rankedscores[0:10]:
-            print '%f\t%s' % (score, url)
-
-        print "[query] [r[1] for r in rankedscores[0:10]]: " + str([r[1] for r in rankedscores[0:10]]) + '\n'
-        return words, [url[1] for url in rankedscores[0:10]]
-
-    def frequencyscore(self, words, urls):
-        counts = dict([(url,0) for url in urls])
-
-        for word in words:
-            db_word = self.db.words.find_one({'word': word}) # assumes there's never a duplicate for a given word
-            if db_word is not None:
-                for db_url in db_word['urls']:
-                    for url in urls:
-                        if db_url['url'] == url:
-                            counts[db_url['url']] += len(db_url['locations'])
-
-        print "[frequencyscore] counts: " + str(counts) + '\n'
-        return self.normalizescores(counts)
-
-    def nnscore(self, words, urls):
-        nnres = mynet.getresult(words, urls)
-        print "[nnscore] urls: " + str(urls) + '\n'
-        scores = dict([(urls[i], nnres[i]) for i in range(len(urls))])
-        
-        print "[nnscore] scores: " + str(scores) + '\n'
-        return self.normalizescores(scores)
-
 
 
 
