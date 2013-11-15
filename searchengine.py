@@ -51,7 +51,6 @@ class crawler:
         connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
-        driver, display = initialize_driver()
 
     # Close the database
     def __del__(self):
@@ -60,7 +59,6 @@ class crawler:
     # Index an individual page
     def addtoindex(self, content, picurl):
         if self.isindexed(picurl): return 
-        if content is None: return
 
         # Get the individual words
         text = content
@@ -132,13 +130,15 @@ class crawler:
             for page in pages:
                 # (TODO) will freeze after this prints sometimes...
                 print "<-- crawling " + str(page) + '\n' 
+                driver, display = initialize_driver()
                 try: 
                     driver.get(page)
                     comment_content_elements = driver.find_elements_by_xpath('//div[contains(@id,"captions")]')
                     comment_content = None
+                    
                     # (TODO) may be missing this quite often
                     if len(comment_content_elements) > 0:
-                        comment_content = comment_content_elements[0].text
+                        comment_content = comment_content_elements[0].text.encode("utf-8", "ignore")
                     picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/img')
                     if len(picurls) < 1:
                         picurls = driver.find_elements_by_xpath('//div[contains(@id,"image")]/div/img')
@@ -146,11 +146,11 @@ class crawler:
                         picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/a/img')
                     if len(picurls) > 0:
                         realpicurl = picurls[0].get_attribute('src')
-                    else:
-                        realpicurl = None 
-                    if realpicurl is not None:
                         if realpicurl.find("gif") != -1:
                             realpicurl = None
+                    else:
+                        realpicurl = None 
+
                     print "realpicurl: " + str(realpicurl) + '\n'
                     links = driver.find_elements_by_xpath('//a[contains(@href,"gallery")]')
                     print "len(links): " + str(len(links)) + '\n'
@@ -164,7 +164,9 @@ class crawler:
                     raise # FOR TESTING
 
                 if realpicurl is not None:
-                    self.addtoindex(comment_content, realpicurl)
+                    if comment_content is not None:
+                        self.addtoindex(comment_content, realpicurl)
+                driver.close()
 
             pages = newpages
             print "pages: " + str(pages) + '\n'
