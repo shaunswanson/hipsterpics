@@ -59,7 +59,9 @@ class crawler:
 
     # Index an individual page
     def addtoindex(self, content, picurl):
-        if self.isindexed(picurl): return 
+        if self.isindexed(picurl): 
+            print "already indexed!" + '\n'
+            return 
 
         # Get the individual words
         text = content
