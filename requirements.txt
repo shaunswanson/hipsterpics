@@ -1,1 +1,7 @@
 bottle
+BeautifulSoup
+re
+beaker
+urllib2
+pymongo
+urlparse
