@@ -74,17 +74,20 @@
                 %if len(urls) == 0:
                 <center>
                 ..oops. No results.
-                <br>
+                <br><br><br>
                 </center>
                 %end
                 <center><a href="/">Try another query?</a></center>
                 </center>
                 <center>
-                <h1>Would you like to hire me for a machine learning role?</h1>
-                <h3>Check out my <a href="/resume">resume</a>.</h3>
-                <h3>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h3>
-                <h1>This project is opensource.</h1>
-                <h3>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h3>
+                <br><br>
+                <br><br>
+                --------
+                <h3>Would you like to hire me for a machine learning role?</h3>
+                <h5>Check out my <a href="/resume">resume</a>.</h5>
+                <h5>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h5>
+                <h3>This project is open-source.</h3>
+                <h5>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h5>
                 </center>
             </div>
         </div>
