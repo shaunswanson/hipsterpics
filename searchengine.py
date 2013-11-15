@@ -31,7 +31,7 @@ class crawler:
     def __del__(self):
         self.conn.close()
 
-    # Index an individual page (TODO)
+    # Index an individual page
     def addtoindex(self, url, soup):
         if self.isindexed(url): return
         print 'Indexing ' + url
