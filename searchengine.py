@@ -51,6 +51,7 @@ class crawler:
         connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
+        print "NUMBER OF EDGES IN NEURAL NETWORK: " + str(self.db.nn.count()) + '\n'
 
     # Close the database
     def __del__(self):
