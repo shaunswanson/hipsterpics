@@ -10,9 +10,7 @@ import os
 
 class searchnet:
     def __init__(self):
-
         connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
-        # connection_string = "mongodb://localhost"
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
         print self.db
@@ -31,7 +29,7 @@ class searchnet:
                 if layer == 1: return 0
             return db_edge['strength']
         else: #hidden->url
-            db_edge = self.db.nn.find_one({'hiddenid': from_node, 'url': to_node})
+            db_edge = self.db.nn.find_one({'hiddenid': from_node, 'picurl': to_node})
             if db_edge is None:
                 if layer == 0: return -0.2
                 if layer == 1: return 0
@@ -47,9 +45,9 @@ class searchnet:
                 db_edge['strength'] = strength
                 self.db.nn.save(db_edge)
         else: #hidden->url
-            db_edge = self.db.nn.find_one({'hiddenid': from_node, 'url': to_node})
+            db_edge = self.db.nn.find_one({'hiddenid': from_node, 'picurl': to_node})
             if db_edge is None:
-                edgeJSON = {'hiddenid': from_node, 'url': to_node, 'strength': strength}
+                edgeJSON = {'hiddenid': from_node, 'picurl': to_node, 'strength': strength}
                 self.db.nn.insert(edgeJSON)
             else:
                 db_edge['strength'] = strength
@@ -76,7 +74,7 @@ class searchnet:
             for db_edge in db_edges:
                 hiddenids.add(db_edge['hiddenid'])
         for url in urls:
-            db_edges = self.db.nn.find({'url': url})
+            db_edges = self.db.nn.find({'picurl': url})
             for db_edge in db_edges:
                 hiddenids.add(db_edge['hiddenid'])
         return list(hiddenids)

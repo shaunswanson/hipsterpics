@@ -42,9 +42,10 @@
 
     <body>
         <div class="wrapper">
-            <h1>Ah, that's the stuff.</h1>
+            <h1><center>Help me learn!</center></h1>
             <div class="results">
-                results for&nbsp;&ldquo;
+                <center>
+                Click the most hipster-looking picture related to&nbsp;&ldquo;
                 %for word in words:
                 {{word}}&nbsp;
                 %end
@@ -52,13 +53,30 @@
                 <br><br>
                 %i = 0
                 %for url in urls:
+                %if i==0:
+                <table border="0">
+                <tr>
+                %end      
                 <div class="result">
-                    <a href={{url}} target="_blank">{{url}}</a>
-                    
-                    <a class="btn" href="/trainquery?winnerurl={{!url}}">Winner</a>
-                    <br><br>         
+                    <td>
+                    <a href="/trainquery?winnerurl={{!url}}"><img src={{url}} width=250 height=250></a>
+                    </td>         
                 </div>
+                %if i%2!=0 and i != len(urls)-1:
+                </tr><tr>
+                %end 
+                %if i == len(urls)-1:
+                </tr>
+                %end
                 %i += 1
+                %end
+                </center>
+                %if len(urls) == 0:
+                <center>
+                ..oops. No results.
+                <br>
+                <a href="/">Please try again</a>
+                </center>
                 %end
             </div>
         </div>

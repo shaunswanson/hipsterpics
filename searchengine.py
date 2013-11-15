@@ -11,18 +11,45 @@ import pymongo
 import re
 import nn
 import os
-#import bottle
-#import pdb # FOR TESTING
 
 ignorewords = set(['the','of', 'a', 'to', 'and','in','is','it']) 
 mynet = nn.searchnet()
 
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import InvalidElementStateException, TimeoutException, NoSuchElementException
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import InvalidElementStateException, TimeoutException, NoSuchElementException
+
+def initialize_driver():
+    display=None
+    #display = Display(visible=0, size=(800, 600))
+    #display.start()
+
+    profile = FirefoxProfile()
+    profile.set_preference("dom.max_script_run_time", 600) # too short ???
+    profile.set_preference("dom.max_chrome_script_run_time", 600) # too short ???
+    profile.set_preference('permissions.default.image', 2) # disable images
+    profile.set_preference('plugin.scan.plid.all', False) # disable plugin loading crap
+    profile.set_preference('dom.disable_open_during_load', True) # disable popups
+    profile.set_preference('browser.popups.showPopupBlocker', False)
+    driver = webdriver.Firefox(profile) 
+    driver.set_page_load_timeout(30)
+
+    return (driver, display)
+
+driver, display = initialize_driver()
 
 class crawler:
     # Initialize the crawler with the catbase database
     def __init__(self):
-        # (TODO) connect to non-local mongod instance: http://docs.mongodb.org/manual/reference/connection-string/
-        # connection_string = "mongodb://localhost"
         connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
@@ -32,16 +59,15 @@ class crawler:
         self.conn.close()
 
     # Index an individual page
-    def addtoindex(self, url, soup):
-        if self.isindexed(url): return
-        print 'Indexing ' + url
+    def addtoindex(self, soup, picurl):
+        if self.isindexed(picurl): return 
 
         # Get the individual words
         text = self.gettextonly(soup)
         words = self.separatewords(text)
         #print "words: " + str(words) + '\n'
 
-        # Link each word to this url
+        # Link each word to the picurl on the page
         for i in range(len(words)):
             #print "<-- i: " + str(i) + '\n'
             #print "<- url: " + str(url) + '\n'
@@ -53,27 +79,27 @@ class crawler:
             if db_word is not None:
                 j = 0
                 isFound = False
-                for db_url in db_word['urls']:
-                    if db_url['url'] == url:
+                for db_url in db_word['picurls']:
+                    if db_url['picurl'] == picurl:
                         #print "db_word['urls'][j]: " + str(db_word['urls'][j]) + '\n'
                         #print "db_word['urls'][j]['locations']: " + str(db_word['urls'][j]['locations']) + '\n'
-                        templist = db_word['urls'][j]['locations']
+                        templist = db_word['picurls'][j]['locations']
                         #print "templist: " + str(templist) + '\n'
                         if templist is not None:
                             templist.append(i)
                         else:
                             templist = [i]
-                        db_word['urls'][j]['locations'] = templist
+                        db_word['picurls'][j]['locations'] = templist
                         self.db.words.save(db_word)
                         isFound = True
                     j += 1
                 if isFound == False:
-                    db_word['urls'] = db_word['urls'] + [{'url': url,'locations': [i]}]
+                    db_word['picurls'] = db_word['picurls'] + [{'picurl': picurl,'locations': [i]}]
                     self.db.words.save(db_word)
-                #print "updated db_word: " + str(db_word) + '\n'
+                print "updated db_word: " + str(db_word) + '\n'
             else:
-                wordJSON = {'word': word, 'urls': [{'url': url, 'locations': [i]}]}
-                #print "created db_word: " + str(wordJSON) + '\n'
+                wordJSON = {'word': word, 'picurls': [{'picurl': picurl, 'locations': [i]}]}
+                print "created db_word: " + str(wordJSON) + '\n'
                 self.db.words.insert(wordJSON)
 
     # Extract the text from an HTML page (no tags)
@@ -99,9 +125,9 @@ class crawler:
         for db_word in self.db.words.find():
             #print "each_word: " + str(db_word) + '\n'
             #print "each_word['urls']: " + str(db_word['urls']) + '\n'
-            for db_url in db_word['urls']:
+            for db_url in db_word['picurls']:
                 #print "db_url: " + str(db_url) + '\n'
-                if db_url['url'] == url:
+                if db_url['picurl'] == url:
                     return True
         return False
 
@@ -112,35 +138,50 @@ class crawler:
     # Starting with a list of pages, do a breadth-first
     # search to the given depth, indexing pages
     # as we go 
-    def crawl(self, pages, depth=2):
+    def crawl(self, pages, depth=5):
         for i in range(depth):
             newpages = set()
             for page in pages:
+                print "<-- crawling " + str(page) + '\n' 
                 try:
                     c = urllib2.urlopen(page)
                 except:
-                    print "Could not open %s" % page
+                    print "1 - Could not open %s" % page
                     continue
-                soup = BeautifulSoup(c.read())
-                self.addtoindex(page, soup)
+                try: 
+                    driver.get(page)
+                    picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/img')
+                    if len(picurls) < 1:
+                        picurls = driver.find_elements_by_xpath('//div[contains(@id,"image")]/div/img')
+                    if len(picurls) < 1:
+                        picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/a/img')
+                    if len(picurls) > 0:
+                        realpicurl = picurls[0].get_attribute('src')
+                    else:
+                        realpicurl = None
+                    if realpicurl is not None:
+                        if realpicurl.find("gif") != -1:
+                            realpicurl = None
+                    print "realpicurl: " + str(realpicurl) + '\n'
+                    links = driver.find_elements_by_xpath('//a[contains(@href,"gallery")]')
+                    print "len(links): " + str(len(links)) + '\n'
+                    for link in links:
+                        reallink = link.get_attribute('href')
+                        #print "reallink: " + str(reallink) + '\n'
+                        newpages.add(reallink)
+                except:
+                    print "2 - Could not open %s" % page
+                    continue
 
-                links = soup('a')
-                for link in links:
-                    if ('href' in dict(link.attrs)):
-                        url = urljoin(page, link['href'])
-                        if url.find("'") != -1: continue
-                        url = url.split('#')[0] # remove location portion
-                        if url[0:4] == 'http' and not self.isindexed(url):
-                            newpages.add(url)
-                        linkText = self.gettextonly(link)
-                        self.addlinkref(page, url, linkText)
+                soup = BeautifulSoup(c.read())
+                if realpicurl is not None:
+                    self.addtoindex(soup, realpicurl)
 
             pages = newpages
+            print "pages: " + str(pages) + '\n'
 
 class searcher:
     def __init__(self):
-        # (TODO) connect to non-local mongod instance: http://docs.mongodb.org/manual/reference/connection-string/
-        # connection_string = "mongodb://localhost"
         connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
@@ -162,16 +203,16 @@ class searcher:
         for word in words:
             db_word = self.db.words.find_one({'word': word}) # assumes there's never a duplicate for a given word
             if db_word is not None:
-                for db_url in db_word['urls']:
+                for db_url in db_word['picurls']:
                     results.append(db_url)
-                    urls.add(db_url['url'])
+                    urls.add(db_url['picurl'])
 
         print "[getunrankedmatches] results: " + str(results) + '\n'
         for result in results:
             for url in urls:
                 counter = 0
                 for i in range(len(results)):
-                    if results[i]['url'] == url:
+                    if results[i]['picurl'] == url:
                         counter += 1
                 if counter == len(words):
                     finalresults.add(url)
@@ -200,7 +241,7 @@ class searcher:
         totalscores = dict([(result, 0.0) for result in results])
 
         # (TODO) add more scores weighted with the neural network score
-        weights = [(1.0, self.frequencyscore(words, results))] #(1.0, self.nnscore(words, results)) 
+        weights = [(0.35, self.frequencyscore(words, results)), (0.65, self.nnscore(words, results))]
 
         print "[getscoredlist] weights: " + str(weights) + '\n'
         for (weight, scores) in weights:
@@ -228,10 +269,10 @@ class searcher:
         for word in words:
             db_word = self.db.words.find_one({'word': word}) # assumes there's never a duplicate for a given word
             if db_word is not None:
-                for db_url in db_word['urls']:
+                for db_url in db_word['picurls']:
                     for url in urls:
-                        if db_url['url'] == url:
-                            counts[db_url['url']] += len(db_url['locations'])
+                        if db_url['picurl'] == url:
+                            counts[db_url['picurl']] += len(db_url['locations'])
 
         print "[frequencyscore] counts: " + str(counts) + '\n'
         return self.normalizescores(counts)

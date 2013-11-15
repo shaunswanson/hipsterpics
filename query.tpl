@@ -15,7 +15,10 @@
 
     <body>
         <div class="wrapper">
-            <h1><center>Ask and ye shall receive:</center></h1>
+            <center>
+            <h1>Enter something you love</h1>
+            <h3>(let's see how hipsters have ruined it):</h3>
+            </center>
             <div class="query_input">
             <form method="POST" class="form" action="/query">
                 <center>
@@ -24,6 +27,16 @@
                 </center>
             </form>
             </div>
+            <center>
+            <br><br>
+            <h5>Note: the database is a bit sparse right now.</h5>
+            <h6>Some fun queries to try:</h6>
+            <h6>
+            XXX<br>
+            XXX<br>
+            XXX
+            </h6>
+            </center>
         </div>
     </body>
 </html>
