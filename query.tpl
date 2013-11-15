@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>query?</title>
+        <title>Hmm..</title>
         <style type="text/css">
             body {font-family:sans-serif;color:#4f494f;}
             form input {border-radius: 7.5px;}
@@ -15,11 +15,13 @@
 
     <body>
         <div class="wrapper">
-            <h1>Ask and ye shall receive:</h1>
+            <h1><center>Ask and ye shall receive:</center></h1>
             <div class="query_input">
             <form method="POST" class="form" action="/query">
+                <center>
                 <input type="text" name="query"/>
                 <input type="submit" value="I can haz?"/>
+                </center>
             </form>
             </div>
         </div>
