@@ -75,9 +75,9 @@
                 <center>
                 ..oops. No results.
                 <br>
-                <a href="/">Please try again</a>
                 </center>
                 %end
+                <center><a href="/">Please try again</a></center>
             </div>
         </div>
     </body>

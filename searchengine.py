@@ -143,6 +143,8 @@ class crawler:
                     if len(picurls) < 1:
                         picurls = driver.find_elements_by_xpath('//div[contains(@id,"image")]/div/img')
                     if len(picurls) < 1:
+                        picurls = driver.find_elements_by_xpath('//div[contains(@class,"image")]/div/div/a/img')
+                    if len(picurls) < 1:
                         picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/a/img')
                     if len(picurls) > 0:
                         realpicurl = picurls[0].get_attribute('src')
