@@ -74,6 +74,7 @@ class crawler:
             #print "<-- i: " + str(i) + '\n'
             #print "<- url: " + str(url) + '\n'
             word = words[i]
+            word = word.lower()
             #print "word: " + str(word) + '\n'
             if word in ignorewords: continue
             db_word = self.db.words.find_one({'word': word}) # assumes there's never a duplicate for a given word
@@ -250,7 +251,7 @@ class searcher:
     def query(self, q):
         results = self.getunrankedmatches(q)
         print "[query] results" + str(results) + '\n'
-        words = q.split(' ')
+        words = q.lower().split(' ')
         scores = self.getscoredlist(words, results)
         rankedscores = sorted([(score, url) for (url, score) in scores.items()], reverse=1)
         for (score, url) in rankedscores[0:10]:

@@ -16,8 +16,8 @@
     <body>
         <div class="wrapper">
             <center>
-            <h1>Enter something you love</h1>
-            <h3>(let's see how hipsters have ruined it):</h3>
+            <h1>Enter your favorite activity.</h1>
+            <h3>(let's see how the hipsters have ruined it):</h3>
             </center>
             <div class="query_input">
             <form method="POST" class="form" action="/query">
@@ -32,9 +32,9 @@
             <h5>Note: the database is a bit sparse right now.</h5>
             <h6>Some fun queries to try:</h6>
             <h6>
+            spending time<br>
             XXX<br>
-            XXX<br>
-            XXX
+            doing drugs
             </h6>
             </center>
         </div>
