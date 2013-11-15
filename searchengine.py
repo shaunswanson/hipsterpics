@@ -43,7 +43,7 @@ def initialize_driver():
 
     return (driver, display)
 
-driver, display = initialize_driver()
+
 
 class crawler:
     # Initialize the crawler with the catbase database
@@ -51,6 +51,7 @@ class crawler:
         connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
+        driver, display = initialize_driver()
 
     # Close the database
     def __del__(self):
