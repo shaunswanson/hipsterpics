@@ -20,6 +20,10 @@ app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 def querypage():
     return bottle.template('query')
 
+@bottle.route('/resume')
+def resumepage():
+    return bottle.template('resume')
+
 @bottle.route('/query', method='POST')
 def queryhandler():
     e = searchengine.searcher()

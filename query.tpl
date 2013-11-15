@@ -32,10 +32,17 @@
             <h5>Note: the database is a bit sparse right now.</h5>
             <h6>Some fun queries to try:</h6>
             <h6>
-            spending time<br>
             XXX<br>
-            doing drugs
+            XXX<br>
+            XXX
             </h6>
+            </center>
+            <center>
+            <h1>Would you like to hire me for a machine learning role?</h1>
+            <h3>Check out my <a href="/resume">resume</a>.</h3>
+            <h3>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h3>
+            <h1>This project is opensource.</h1>
+            <h3>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h3>
             </center>
         </div>
     </body>
