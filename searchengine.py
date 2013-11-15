@@ -2,7 +2,6 @@
 GLOBAL TODO:
 
 - clean up html before running it through beautiful soup using html5lib (http://stackoverflow.com/questions/3198874/malformed-start-tag-error-python-beautifulsoup-and-sipie-ubuntu-10-04)
-- possible crawler error: 'popular' is being found in http://www.buzzfeed.com/justinesharrock/google-mystery-barge-is-actually-a-sailboat (location is 4903 in database, but not when printing words list... it's types)
 '''
 
 import urllib2

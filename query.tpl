@@ -20,7 +20,7 @@
             <form method="POST" class="form" action="/query">
                 <center>
                 <input type="text" name="query"/>
-                <input type="submit" value="I can haz?"/>
+                <input type="submit" value="Submit"/>
                 </center>
             </form>
             </div>
