@@ -65,7 +65,7 @@ class crawler:
         # Get the individual words
         text = self.gettextonly(soup)
         words = self.separatewords(text)
-        #print "words: " + str(words) + '\n'
+        print "words: " + str(words) + '\n'
 
         # Link each word to the picurl on the page
         for i in range(len(words)):
