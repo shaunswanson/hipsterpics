@@ -11,6 +11,7 @@ from urlparse import urljoin
 import pymongo
 import re
 import nn
+import os
 #import bottle
 #import pdb # FOR TESTING
 
@@ -23,9 +24,9 @@ class crawler:
     def __init__(self):
         # (TODO) connect to non-local mongod instance: http://docs.mongodb.org/manual/reference/connection-string/
         # connection_string = "mongodb://localhost"
-        connection_string = int(os.environ.get("MONGOLAB_URI", "mongodb://localhost"))
+        connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
-        self.db = self.conn.catbase
+        self.db = self.conn.get_default_database()
 
     # Close the database
     def __del__(self):
@@ -140,9 +141,10 @@ class crawler:
 class searcher:
     def __init__(self):
         # (TODO) connect to non-local mongod instance: http://docs.mongodb.org/manual/reference/connection-string/
-        connection_string = "mongodb://localhost"
+        # connection_string = "mongodb://localhost"
+        connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
-        self.db = self.conn.catbase
+        self.db = self.conn.get_default_database()
 
     def __del__(self):
         self.conn.close()
@@ -180,12 +182,14 @@ class searcher:
 
     # take a dictionary of urls and scores and return a new dictionary with the same urls, but with scores between 0 and 1
     def normalizescores(self, scores, smallIsBetter = 0):
+
         vsmall = 0.00001 # Avoid division by zero errors
         if smallIsBetter:
             minscore = min(scores.values())
             return dict([(u, float(minscore)/max(vsmall,1)) for (u,l) in scores.items()])
         else:
-            if scores is not None:
+
+            if scores is not None and len(scores.values()) > 0:
                 maxscore = max(scores.values())
             else:
                 maxscore = 0

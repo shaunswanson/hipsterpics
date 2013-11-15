@@ -11,10 +11,11 @@ import os
 class searchnet:
     def __init__(self):
 
-        connection_string = int(os.environ.get("MONGOLAB_URI", "mongodb://localhost"))
+        connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         # connection_string = "mongodb://localhost"
         self.conn = pymongo.MongoClient(connection_string)
-        self.db = self.conn.catbase
+        self.db = self.conn.get_default_database()
+        print self.db
 
     def __del__(self):
         self.conn.close()

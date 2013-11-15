@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from urlparse import urljoin
 import pymongo
 import re
+import os
 
 ignorewords = set(['the','of', 'a', 'to', 'and','in','is','it']) 
 
@@ -18,7 +19,7 @@ class crawler:
     def __init__(self):
         # (TODO) connect to non-local mongod instance: http://docs.mongodb.org/manual/reference/connection-string/
         # connection_string = "mongodb://localhost"
-        connection_string = int(os.environ.get("MONGOLAB_URI", "mongodb://localhost"))
+        connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost')
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.catbasetest # FOR TESTING
 
