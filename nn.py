@@ -6,10 +6,13 @@ GLOBAL TODO:
 
 from math import tanh
 import pymongo
+import os
 
 class searchnet:
     def __init__(self):
-        connection_string = "mongodb://localhost"
+
+        connection_string = int(os.environ.get("MONGOLAB_URI", "mongodb://localhost"))
+        # connection_string = "mongodb://localhost"
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.catbase
 
