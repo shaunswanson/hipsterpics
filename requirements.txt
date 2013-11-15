@@ -1,6 +1,5 @@
 bottle
-BeautifulSoup
-re
+BeautifulSoup==4.x
 beaker
 urllib2
 pymongo
