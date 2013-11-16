@@ -26,14 +26,8 @@ def initialize_driver():
     #display = Display(visible=0, size=(800, 600))
     #display.start()
 
-    profile = FirefoxProfile()
-    profile.set_preference("dom.max_script_run_time", 600) # too short ???
-    profile.set_preference("dom.max_chrome_script_run_time", 600) # too short ???
-    profile.set_preference('permissions.default.image', 2) # disable images
-    profile.set_preference('plugin.scan.plid.all', False) # disable plugin loading crap
-    profile.set_preference('dom.disable_open_during_load', True) # disable popups
-    profile.set_preference('browser.popups.showPopupBlocker', False)
-    driver = webdriver.Firefox(profile) 
+    driver = webdriver.PhantomJS()
+    driver.set_window_size(1024, 768)
     driver.set_page_load_timeout(30)
 
     return (driver, display)
@@ -81,6 +75,7 @@ class crawler:
             word = word.lower()
             #print "word: " + str(word) + '\n'
             if word in ignorewords: continue
+            if word.find("http") != -1: continue
             db_word = self.db.words.find_one({'word': word}) # assumes there's never a duplicate for a given word
             #print "db_word: " + str(db_word) + '\n'
             if db_word is not None:
