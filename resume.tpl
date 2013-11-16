@@ -13,7 +13,7 @@
         </style>
     </head>
 
-    <body>
+    <body bgcolor="#DCDCDC">
         <div class="wrapper">
             <center>
             <h3>Would you like to hire me for a machine learning role?</h3>

@@ -13,7 +13,7 @@
         </style>
     </head>
 
-    <body>
+    <body bgcolor="#DCDCDC">
         <div class="wrapper">
             <center>
             <h1>Enter your favorite activity.</h1>
@@ -30,11 +30,10 @@
             <center>
             <br><br>
             <h5>Note: the database is a bit sparse right now.</h5>
-            <h6>Some fun queries to try:</h6>
+            <h6>Some queries that will actually give results:</h6>
             <h6>
-            XXX<br>
-            XXX<br>
-            XXX
+            "be happy"<br>
+            "http com" (did i mention fun??)
             </h6>
             </center>
             <center>

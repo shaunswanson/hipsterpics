@@ -40,7 +40,7 @@
     </script>
     </head>
 
-    <body>
+    <body bgcolor="#DCDCDC">
         <div class="wrapper">
             <h1><center>Help me learn!</center></h1>
             <div class="results">

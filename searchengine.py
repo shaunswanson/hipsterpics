@@ -1,8 +1,3 @@
-'''
-GLOBAL TODO:
-
-'''
-
 import urllib2
 from urlparse import urljoin
 import pymongo
@@ -10,7 +5,7 @@ import re
 import nn
 import os
 
-ignorewords = set(['the', 'this', 'of', 'so', 'about', 'a', 'to', 'and','in','is', 'you', 'comments','it','points',':','hours','ago','days','months','years', 'point', 'reply','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','deleted','comment','OP','op','repost','imgur']) 
+ignorewords = set(['the', 'http','com','not','he', 'she', 'this', 'of', 'so', 'about', 'a', 'to', 'and','in','is', 'you', 'comments','it','points',':','hours','ago','days','months','years', 'point', 'reply','0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','deleted','comment','OP','op','repost','imgur']) 
 mynet = nn.searchnet()
 
 from selenium import webdriver
@@ -43,27 +38,13 @@ def initialize_driver():
 
     return (driver, display)
 
-
-
 class crawler:
     # Initialize the crawler with the catbase database
     def __init__(self):
         connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
-        print "NUMBER OF EDGES IN NEURAL NETWORK: " + str(self.db.nn.count()) + '\n'
-
-        mywords = self.db.words.find()
-        for myword1 in mywords:
-            print "myword1: " + str(myword1['word']) + '\n'
-            for myword2 in mywords:
-                print "myword2: " + str(myword2['word']) + '\n'
-                for myurl1 in myword1['picurls']:
-                    for myurl2 in myword2['picurls']:
-                        if myurl1['picurl'] == myurl2['picurl']:
-                            print "myurl1: " + str(myurl1['picurl']) + '\n'
-                            print "myurl2: " + str(myurl2['picurl']) + '\n'
-                            print "pair: " + str(myword1['word']) + " " + str(myword2['word']) + '\n'
+        #print "NUMBER OF EDGES IN NEURAL NETWORK: " + str(self.db.nn.count()) + '\n'
 
     # Close the database
     def __del__(self):
@@ -141,6 +122,18 @@ class crawler:
     # search to the given depth, indexing pages
     # as we go 
     def crawl(self, pages, depth=5):
+        mywords = self.db.words.find()
+        for myword1 in mywords:
+            print "myword1: " + str(myword1['word']) + '\n'
+            for myword2 in mywords:
+                print "myword2: " + str(myword2['word']) + '\n'
+                for myurl1 in myword1['picurls']:
+                    for myurl2 in myword2['picurls']:
+                        if myurl1['picurl'] == myurl2['picurl']:
+                            print "myurl1: " + str(myurl1['picurl']) + '\n'
+                            print "myurl2: " + str(myurl2['picurl']) + '\n'
+                            print "pair: " + str(myword1['word']) + " " + str(myword2['word']) + '\n'
+
         for i in range(depth):
             newpages = set()
             for page in pages:
