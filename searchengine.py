@@ -133,7 +133,6 @@ class crawler:
         for i in range(depth):
             newpages = set()
             for page in pages:
-                # (TODO) will freeze after this prints sometimes...
                 print "<-- crawling " + str(page) + '\n' 
                 driver, display = initialize_driver()
                 try: 
@@ -173,7 +172,7 @@ class crawler:
                 if realpicurl is not None:
                     if comment_content is not None:
                         self.addtoindex(comment_content, realpicurl)
-                driver.close()
+                #driver.close()
 
             pages = newpages
             print "pages: " + str(pages) + '\n'
