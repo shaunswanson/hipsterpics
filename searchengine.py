@@ -90,9 +90,9 @@ class crawler:
 
         # Get the individual words
         text = content
-        print "text: " + str(text) + '\n'
+        #print "text: " + str(text) + '\n'
         words = self.separatewords(text)
-        print "words: " + str(words) + '\n'
+        #print "words: " + str(words) + '\n'
 
         # Link each word to the picurl on the page
         if len(words) < 50: return
