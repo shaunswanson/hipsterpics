@@ -1,8 +1,21 @@
+'''
+GLOBAL TODO:
+
+add weight 5 to words in the title - title needs to be scraped
+
+1) get crawler working
+    - if process crashes, start over
+2) run 50 crawlers in parallel for a night on heroku with mongo queue collection (seed with a bunch of urls)
+3) check database values upon interactions with a populated database to make sure it's running correctly. is it fun? post everywhere
+4) prettify with mark c help
+'''
+
 import urllib2
 from urlparse import urljoin
 import pymongo
 import re
 import nn
+import time
 import os
 
 ignorewords = set(['the', 'http','com','not','he', 'she', 'this', 'of', 'so', 'about', 'a', 'to', 'and','in','is', 'you', 'comments','it','points',':','hours','ago','days','months','years', 'point', 'reply','0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','deleted','comment','OP','op','repost','imgur']) 
@@ -20,15 +33,29 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException, TimeoutException, NoSuchElementException
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 def initialize_driver():
     display=None
     #display = Display(visible=0, size=(800, 600))
     #display.start()
+    dcap = dict(DesiredCapabilities.PHANTOMJS)
+    dcap["phantomjs.page.settings.userAgent"] = (
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/53 "
+        "(KHTML, like Gecko) Chrome/15.0.87"
+    )
+    driver = webdriver.PhantomJS(executable_path='phantomjs', port=0, desired_capabilities=dcap) # PhantomJS located at /Users/shaunswanson/Downloads/phantomjs-1.9.2-macosx/bin
+    #profile = FirefoxProfile() # FOR TESTING
+    #profile.set_preference("dom.max_script_run_time", 600) # too short ???
+    #profile.set_preference("dom.max_chrome_script_run_time", 600) # too short ???
+    #profile.set_preference('permissions.default.image', 2) # disable images
+    #profile.set_preference('plugin.scan.plid.all', False) # disable plugin loading crap
+    #profile.set_preference('dom.disable_open_during_load', True) # disable popups
+    #profile.set_preference('browser.popups.showPopupBlocker', False)
+    #driver = webdriver.Firefox(profile) 
 
-    driver = webdriver.PhantomJS()
-    driver.set_window_size(1024, 768)
-    driver.set_page_load_timeout(30)
+    #driver.set_window_size(1024, 768) # FOR TESTING
+    #driver.set_page_load_timeout(30)# FOR TESTING
 
     return (driver, display)
 
@@ -99,10 +126,10 @@ class crawler:
                 if isFound == False:
                     db_word['picurls'] = db_word['picurls'] + [{'picurl': picurl,'locations': [i]}]
                     self.db.words.save(db_word)
-                print "updated db_word: " + str(db_word) + '\n'
+                #print "updated db_word: " + str(db_word) + '\n'
             else:
                 wordJSON = {'word': word, 'picurls': [{'picurl': picurl, 'locations': [i]}]}
-                print "created db_word: " + str(wordJSON) + '\n'
+                #print "created db_word: " + str(wordJSON) + '\n'
                 self.db.words.insert(wordJSON)
 
     # Separate the words by any non-whitespace character
@@ -135,31 +162,38 @@ class crawler:
             for page in pages:
                 print "<-- crawling " + str(page) + '\n' 
                 driver, display = initialize_driver()
+                
+                
                 try: 
                     driver.get(page)
+
                     comment_content_elements = driver.find_elements_by_xpath('//div[contains(@id,"captions")]')
                     comment_content = None
-                    
-                    # (TODO) may be missing this quite often
                     if len(comment_content_elements) > 0:
                         comment_content = comment_content_elements[0].text.encode("utf-8", "ignore")
+                    print "comment_content: " + str(comment_content) + '\n'
+
                     picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/img')
+                    print "picurls: " + str(picurls) + '\n'
                     if len(picurls) < 1:
                         picurls = driver.find_elements_by_xpath('//div[contains(@id,"image")]/div/img')
                     if len(picurls) < 1:
                         picurls = driver.find_elements_by_xpath('//div[contains(@class,"image")]/div/div/a/img')
                     if len(picurls) < 1:
                         picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/a/img')
+                    
                     if len(picurls) > 0:
                         realpicurl = picurls[0].get_attribute('src')
                         if realpicurl.find("gif") != -1:
                             realpicurl = None
                     else:
                         realpicurl = None 
-
                     print "realpicurl: " + str(realpicurl) + '\n'
+                    
                     links = driver.find_elements_by_xpath('//a[contains(@href,"gallery")]')
                     print "len(links): " + str(len(links)) + '\n'
+                    
+                    # (TODO) update mongo collection serving as a queue for workers in parallel
                     for link in links:
                         reallink = link.get_attribute('href')
                         #print "reallink: " + str(reallink) + '\n'
@@ -172,7 +206,7 @@ class crawler:
                 if realpicurl is not None:
                     if comment_content is not None:
                         self.addtoindex(comment_content, realpicurl)
-                #driver.close()
+                driver.close()
 
             pages = newpages
             print "pages: " + str(pages) + '\n'

@@ -1,0 +1,1931 @@
+<!DOCTYPE html><html><head>
+        <title>Tumblr is doing a thing tomorrow, and since most of us here on imgur looove cats, I thought we could join in! - Imgur</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+
+
+
+
+            <link rel="stylesheet" href="/css/imgur.mobile.min.css?1384483532">
+
+
+
+
+            <script src="//beacon.errorception.com/51f6b5b6df980f995a00010a.js" async=""></script><script type="text/javascript" async="" src="//www.google-analytics.com/ga.js"></script><script>
+                (function(_,e,rr,s){_errs=[s];var c=_.onerror;_.onerror=function(){var a=arguments;_errs.push(a);
+                c&&c.apply(this,a)};var b=function(){var c=e.createElement(rr),b=e.getElementsByTagName(rr)[0];
+                c.src="//beacon.errorception.com/"+s+".js";c.async=!0;b.parentNode.insertBefore(c,b)};
+                _.addEventListener?_.addEventListener("load",b,!1):_.attachEvent("onload",b)})
+                (window,document,"script","51f6b5b6df980f995a00010a");
+            </script>
+
+
+
+
+            <script type="text/javascript" src="/js/dist/imgur.mobile.lib.min.js?1384483532"></script>
+            <script type="text/javascript" src="/js/dist/imgur.mobile.min.js?1384483532"></script>
+
+
+
+
+        <script type="text/template" id="Account-AlbumItem">
+<% if(obj.id) { %>
+    <a href="javascript:;" data-url="/a/<%= id %>" class="listview-link">
+        <% if(cover) { %>
+            <img src="http://i.imgur.com/<%= cover %>b.jpg" />
+        <% } else { %>
+            <img src="http://i.imgur.com/album-coverb.jpg" />
+        <% } %>
+        <h3 class='title'><%= (obj.title) ? _.escape(title) : 'untitled' %></h3>
+        <p><%= (obj.description) ? _.escape(description) : '' %></p>
+    </a>
+    <% if(obj.isUser) {%>
+        <a href="javascript:;" class="privacy-<%= privacy %> split-bar edit"><span class="ui-icon gear">Edit Album</span></a>
+    <% } %>
+<% } %>
+</script>
+<script type="text/template" id="Account-Albums">
+<div class="contextOverlay create-new"></div>
+</script>
+<script type="text/template" id="Account-Comment">
+<a href="javascript:;" id="<%= id %>" data-url="/gallery/<%= image_id %>/comment/<%= (!_.isUndefined(obj.routeToParent) && obj.routeToParent) ? parent_id : id %>" class="listview-link">
+    <img src="http://i.imgur.com/<%= (on_album) ? album_cover : image_id %>b.jpg" />
+    <h3><%= obj.deleted? "[deleted]" : _.escape(obj.comment) %></h3>
+    <p><%= points %> point<%= (parseInt(points) !== 1) ? 's' : '' %> : <%= Imgur.Utils.nicetime({ date: (parseInt(datetime) * 1000), tense : true }) %></p>
+    <div class="notification list-item hide">new</div>
+</a>
+<% if(Imgur.Model.Account.getInstance().get('url') === author ) {%>
+    <a href="javascript:;" class="delete split-bar"><span class="ui-icon delete-icon">Delete Comment</span></a>
+<% } %>
+    <!-- <a href="javascript:;" class="reply split-bar"><span class="ui-icon reply-icon">Reply</span></a> -->
+</script>
+<script type="text/template" id="Account-Message-ThreadItem">
+<% var time = moment(parseInt(datetime)*1000); %>
+<% if(obj.renderTimestamp != null) { %>
+<p class="date-divider"><span class="bg-black"><%= (new Date().toDateString() === time.format('ddd MMM DD YYYY')) ? time.calendar() : time.format('MMMM D, YYYY') + ' &middot; ' + time.format('h:mm A') %></span></p>
+<% } %>
+<p class="body <%= (!_.isUndefined(obj.from) && Imgur.Model.Account.getInstance().id.toLowerCase() === from.toLowerCase()) ? 'signedin_user' : 'with_user' %>">
+    <span <%= (obj.id != undefined) ? 'id=\"i' + id + '\"' : 'class=\"new\"' %>><%= (!_.isUndefined(obj.body)) ? Imgur.Utils.linkify(Imgur.Utils.escape(body)) : '' %><br /></span>
+    <span class="display-block message-info"><span class="ellipses name"><%= (!_.isUndefined(obj.from) && Imgur.Model.Account.getInstance().id.toLowerCase() === from.toLowerCase()) ? 'you' : obj.from %></span>  <%= "&middot; sent " + time.format('h:mma') %></span>
+</p>
+</script>
+<script type="text/template" id="Account-Message">
+<div class="message-header" id="<%= id %>">
+    <a class="message-link" href="javascript:;" data-url="account/<%= Imgur.Model.Account.getInstance().get('url') %>/messages/<%= id %>">
+        <h3>
+            <span><%= with_account %></span>
+        </h3>
+        <span class="ellipses preview"><%= Imgur.Utils.escape(last_message_preview) %></span>
+        <div class="split-bar"><span class="message-count"><%= message_count %></span></div>
+    </a>
+</div>
+</script>
+<script type="text/template" id="Account-Settings">
+<form id="settings">
+<table class="settings-box" width="100%">
+    <tr>
+        <td>
+            Uploaded Images are:
+            <div class="select-container">
+                <select name="public_images">
+                    <option value="private" <%= this.isSelected(!public_images) %>>Private</option>
+                    <option value="public" <%= this.isSelected(public_images) %>>Public</option>
+                </select>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="setting_description textbox-dark <%= this.showIfTrue(public_images) %>" public_images="public">
+                <b>Public:</b>
+                Make all my images public so that they can be seen here:<br>
+                <a href="http://<%= Imgur.Model.Account.getInstance().get('url') %>.imgur.com/all/" target="_blank">
+                    http://<%= Imgur.Model.Account.getInstance().get('url') %>.imgur.com/all/
+                </a>
+            </div>
+            <div class="setting_description textbox-dark  <%= this.showIfTrue(!public_images) %>" public_images="private">
+                <b>Private:</b>
+                Images that are uploaded must be
+                put into a public album for others to see
+                them or even know that they exist.
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            Album Privacy:
+            <div class="select-container">
+                <select name="album_privacy">
+                    <option value="public" <%= this.isSelected(album_privacy=='public') %>>Public</option>
+                    <option value="hidden" <%= this.isSelected(album_privacy=='hidden') %>>Hidden</option>
+                    <option value="secret" <%= this.isSelected(album_privacy=='secret') %>>Secret</option>
+                </select>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div class="setting_description textbox-dark <%= this.showIfTrue(album_privacy=='public') %>" album_privacy="public">
+                <b>Public:</b>
+                Anyone can see your albums by going to:
+                <a href="http://<%= Imgur.Model.Account.getInstance().get('url') %>.imgur.com" target="_blank">
+                    http://<%= Imgur.Model.Account.getInstance().get('url') %>.imgur.com
+                </a>
+            </div>
+            <div class="setting_description textbox-dark <%= this.showIfTrue(album_privacy=='hidden') %>" album_privacy="hidden">
+                <b>Hidden:</b>
+                Albums will be hidden by default. They will not appear in your album list, but each one will still be accessible by going to the album's URL.
+            </div>
+            <div class="setting_description textbox-dark <%= this.showIfTrue(album_privacy=='secret') %>" album_privacy="secret">
+                <b>Secret:</b>
+                By default, no one but you can see or access your albums.
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            Account Messaging:
+            <div class="select-container margin-bottom">
+                <select name="messaging_enabled">
+                    <option value="true" <%= this.isSelected(messaging_enabled==true) %>>On</option>
+                    <option value="false" <%= this.isSelected(messaging_enabled==false) %>>Off</option>
+                </select>
+            </div>
+        </td>
+    </tr>
+
+    <% if(Imgur.Mobile.ENV === 'release' && Imgur.Mobile.OS === 'android') { %>
+    <tr>
+        <td>
+            Message Notifications:
+            <div class="select-container">
+                <select name="notification_interval">
+                    <option value="off" id="notification_interval_OFF" <%= this.isSelected(notification_interval=='off') %>>Off</option>
+                    <option value="5min" id="notification_interval_5MIN" <%= this.isSelected(notification_interval=='5min') %>>5 min</option>
+                    <option value="1hour" id="notification_interval_1HOUR" <%= this.isSelected(notification_interval=='1hour') %>>1 hour</option>
+                    <option value="6hours" id="notification_interval_6HOURS" <%= this.isSelected(notification_interval=='6hours') %>>6 hours</option>
+                    <option value="24hours" id="notification_interval_24HOURS" <%= this.isSelected(notification_interval=='24hours') %>>1 day</option>
+                </select>
+            </div>
+        </td>
+    </tr>
+    <% } %>
+
+    <% if(obj.blocked_users.length) { %>
+        <tr>
+            <td><b>Blocked users</b></td>
+        </tr>
+        <tr>
+            <td class="blocked-users textbox-dark"><%= this.getBlockedUsers() %></td>
+        </tr>
+    <% } %>
+
+    <% if(false || obj.pro_expiration) { %>
+        <tr>
+            <td class="pro-user textbox center-text"><b>You have an Imgur Pro account.</b> Thanks for supporting us!</td>
+        </tr>
+    <% } else if (false) { %>
+        <tr>
+            <td class="textbox upgradeProLink"><a href="http://imgur.com/register/upgrade" target="_blank">Upgrade to an Imgur Pro account</a></td>
+        </tr>
+    <% } %>
+</table>
+</form>
+</script>
+<script type="text/template" id="Account-Trophy">
+<a href="javascript:;" data-url="<%= obj.data_link %>" class="listview-link">
+    <img src="http://imgur.com/images/trophies/<%= hex_md5(obj.name_clean).substr(0, 6) %>.png" />
+    <h3 class="title"><%= _.escape(obj.name) %></h3>
+    <p class="<%= !obj.data_link? 'white-text' : '' %>"><%= _.escape(obj.description) %></p>
+    <p class="<%= !obj.data_link? 'white-text' : '' %>"><%= Imgur.Utils.prettyPrint(obj.datetime, 'date') %></p>
+</a>
+</script>
+<script type="text/template" id="Album">
+<div>
+    <% if(obj.showLinks) { %>
+    <div>
+        <table class="image-links">
+            <tr>
+                <td class="selectholder select-container">
+                    <select id="embedlinks">
+                        <option value="http://imgur.com/a/<%= id %>" data-linktype="Link">Link</option>
+                        <option value="<iframe class='imgur-album' width='100%' height='550' frameborder='0' src='http://imgur.com/a/<%= id %>/embed'></iframe>" data-linktype="Embedded Album">Embedded Album</option>
+                        <option value="[URL=http://imgur.com/a/<%= id %>]http://imgur.com/a/<%= id %>[/URL]" data-linktype="Linked BB">Linked BB</option>
+                        <option value="[Imgur](http://imgur.com/a/<%= id %>)" data-linktype="Markdown Link">Markdown Link</option>
+                        <% if(obj.deletehash != null && obj.deletehash.length === 15) { %>
+                            <option value="http://imgur.com/delete/<%= deletehash %>" data-linktype="Deletion Link">Deletion Link</option>
+                        <% } %>
+                    </select>
+                </td>
+                <td class="image-link-td">
+                    <div>
+                        <input type="text" class="image-link" data-url="http://imgur.com/a/<%= id %>" value="http://imgur.com/a/<%= id %>"/>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <% } %>
+
+    <h2 class="album-title">
+        <%= (obj.title) ? _.escape(title) : '' %>
+        <% if(obj.account_url != null && (/gallery/.test(Backbone.history.fragment))) { %>
+            <span class="small-font"> - </span>
+            <a class="op-account small-font" href="javascript:;" data-url="/user/<%= account_url.toLowerCase() %>"><%= Imgur.Utils.getAuthorName(account_url) %></a>
+        <% } %>
+    </h2>
+
+    <% if(!/gallery/.test(Backbone.history.fragment) && obj.description) { %>
+        <p class="album-description"><%= Imgur.Utils.linkify(Imgur.Utils.escape(description)) %></p>
+    <% } %>
+</div>
+</script>
+<script type="text/template" id="Comment">
+<% if (obj.author) { %>
+    <% if (obj.viewAllButton) {%>
+    <div class="textbox-dark allcommentscontainer center-text">
+        You are viewing a single comment. <a href="javascript:;" data-url="gallery/<%= image_id %>" class='viewall'>view the rest of the them.</a>
+    </div>
+    <% } %>
+    <div class="comment-text<% if(vote == 'up') { print(" flag-green") } else if(vote=='down') {print(" flag-red")} %>">
+        <div class="comment-info">
+            <% if(!obj.deleted) { %>
+            <a class="account-link" href="javascript:;" data-url="/user/<%= author %>"><%= this.getAuthorName(obj.author) %></a>&middot;
+                <span class="green"><%= (author == image_uploader) ? ' OP ' : '' %></span>
+            <% } %>
+                <span>
+                    <span class='comment-points'><%= points %></span> point<% (points == 1 || points == -1) ? print('') : print('s') %> : <%= moment(parseInt(datetime) * 1000).fromNow() %>
+                </span>
+        </div>
+        <p>
+            <%= (!obj.deleted) ? Imgur.Utils.linkify(Imgur.Utils.escape(obj.comment)) : '[deleted]' %>
+        </p>
+    </div>
+    <table class="comment-actions<% if(obj.deleted) { %> disabled<% } %>">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+                <% if (Imgur.Model.Account.getInstance().id != obj.author) { %>
+                <td class='report'><span class="user-button-report">report</span></td>
+                <% } else { %>
+                <td class='delete'><span class="user-button-delete">delete</span></td>
+                <% } %>
+                <% if(Imgur.Mobile.ENV !== 'release') { %>
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected>Cancel</option>
+                        </select>
+                    </span>
+                </td>
+                <% } else { %>
+                <td class="share-btn">
+                    <span>share</span>
+                </td>
+                <% } %>
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+<% } %>
+</script>
+<script type="text/template" id="CommentReplyForm">
+<form id="reply-comment-form" class="comment-form-container">
+    <textarea class="comment-form focus" placeholder="submit a comment"></textarea>
+    <div class="comment-button-container">
+        <button class="btn save">submit a comment</button>
+        <div class="counter">140</div>
+    </div>
+</form>
+</script>
+<script type="text/template" id="CommentSorter">
+<% if (obj.length > 0) { %>
+    <span id="comment-count"><%= obj.length %> comments</span> sorted by
+    <div class="select-container">
+        <select id="commentSort">
+            <% var sort = Imgur.Storage.get('comment_sort'); %>
+            <option value="best" <%= sort === 'best'? 'selected' : ''%>>best</option>
+            <option value="new" <%= sort  === 'new'? 'selected' : ''%>>new</option>
+            <option value="top" <%= sort  === 'top'? 'selected' : ''%>>top</option>
+        </select>
+    </div>
+<% } %>
+</script>
+<script type="text/template" id="ContextMenu-HumanMsg">
+<div class="human-msg"><%= msg %></div></script>
+<script type="text/template" id="ContextMenu-Image">
+<ul class="image-dd">
+    <li><a class="iteminfo" href="javascript;"><%= (obj.is_album) ? 'album' : 'image' %> info</a></li>
+    <% if(!obj.is_album) { %>
+        <li><a class="newtab" href="http://i.imgur.com/<%= id %>.jpg">open image in tab</a></li>
+    <% } %>
+    <% if(Imgur.Mobile.ENV === 'release' && !obj.is_album ) { %>
+        <li><a class="save-image" href="javascript:;">save image</a></li>
+    <% } %>
+    <% if(Imgur.Mobile.ENV === 'release' && (Imgur.Mobile.OS === 'android' || Imgur.Mobile.OS === 'ios')) { %>
+        <li><a class="copy-link" data-id="<%= obj.id %>" data-url="http://imgur.com/<%= obj.id %>" href="javascript:;">copy link to clipboard</a></li>
+    <% } %>
+
+    <% if(/gallery/.test(Backbone.history.fragment)) { %>
+        <% if((!_.isUndefined(obj.deletehash) && obj.deletehash && obj.deletehash.length === 15) ||  (!_.isUndefined(obj.account_url) && !_.isNull(account_url) && Imgur.Model.Account.getInstance().id == obj.account_url)) { %>
+            <li><a class="gallery-remove" href="javascript:;">remove from gallery</a></li>
+        <% } else { %>
+            <li><a class="report" href="javascript:;">report</a></li>
+        <% } %>
+    <% } else { %>
+        <% if((!_.isUndefined(obj.deletehash) && obj.deletehash && obj.deletehash.length === 15)||  (!_.isUndefined(obj.account_url) && Imgur.Model.Account.getInstance().id == obj.account_url)) { %>
+            <% if(obj.is_album) { %>
+                <li><a class="edit album" href="javascript:;">edit album</a></li>
+            <% } else { %>
+                <li><a class="edit image" href="javascript:;">edit title/description</a></li>
+            <% } %>
+                <li><a class="submit-to-gallery" href="javascript:;">submit to gallery</a></li>
+                <li><a class="delete-image" href="javascript:;">delete</a></li>
+        <% } %>
+    <% } %>
+</ul>
+<div class="overlay invisible"></div></script>
+<script type="text/template" id="ContextMenu-ImageMenu">
+<div class="image-menu">
+    <div class="left line-height">
+        <img src="<%= obj.src %>" alt="" />
+    </div>
+
+    <div class="buttons">
+        <div class="button copy-link">Copy link</div>
+        <div class="button save-image">Save image</div>
+        <div class="button new-tab">View image</div>
+        <div class="button cancel">Cancel</div>
+    </div>
+
+    <div class="clear"></div>
+</div></script>
+<script type="text/template" id="ContextMenu-ImagePreview">
+<div class="image-preview">
+    <img src="<%= url.substr(0,23)=='data:image/jpeg;base64,'? url : _.escape(url) %>"/>
+</div></script>
+<script type="text/template" id="ContextMenu-ItemInfo">
+<p>
+    Submitted <%= (!_.isUndefined(datetime)) ? '<span class="lightblue">' + Imgur.Utils.nicetime({'date': obj.datetime*1000, 'tense':true }) + '</span>' : ''%>
+    <% if(!_.isUndefined(obj.account_url) && !_.isNull(obj.account_url)) { %>
+        by <a class="op-account" href="javascript:;" data-url="/user/<%= account_url.toLowerCase() %>"><%= account_url %></a>
+    <% } %>
+</p>
+<p>
+    <span class="lightblue"><%= Imgur.Utils.prettyPrint(views) %></span> views
+    <% if(obj.bandwidth) { %>
+       &middot;
+       <span class="lightblue"><%= Imgur.Utils.bytesToSize(bandwidth) %></span> bandwidth
+    <% } %>
+</p></script>
+<script type="text/template" id="ContextMenu-NetworkTimer">
+<div>
+    <div class="loading spinnerImg centered blackSmall"></div>
+    <div id='network-error' class="red hide">
+        There was a problem with the interwebs!<br/>
+        Try again? <input type="button" value="Refresh"/> the page.
+    </div>
+</div>
+</script>
+<script type="text/template" id="ContextMenu-UploadProgress">
+<div>
+    <div class="loading spinnerImg black centered"></div>
+    <div id="uploading-message">
+        Uploading in background...
+    </div>
+</div></script>
+<script type="text/template" id="ContextMenu-UploadTerms">
+<form data-theme="a">
+
+    <div id="terms-text">
+        The Imgur gallery is for everyone, so only safe
+        for work content is permitted. We must tell you that if you
+        blatantly disregard this rule, then you will be permanently
+        banned from submitting anything else. Please keep Imgur clean!
+    </div>
+
+    <table width="100%">
+        <tr>
+            <td width="50%">
+                <input data-theme="b" type="button" value="Agree" />
+            </td>
+            <td width="50%">
+                <input data-theme="b" type="button" value="Decline" />
+            </td>
+        </tr>
+    </table>
+
+</form></script>
+<script type="text/template" id="ContextMenu-UploadVerifyEmail">
+<form data-theme="a">
+
+    <div id="verify-email-text">
+        <h4>Gallery Submission : Verify your email address</h4>
+        Please click on the link in the verification email already sent to the email address under your account.
+        Need to change your email address? See <a target="_blank" href="http://imgur.com/account/settings">advanced account settings</a>.
+    </div>
+
+    <input data-theme="b" type="button" value="Decline" />
+</form></script>
+<script type="text/template" id="EditAlbum">
+<form data-theme="a">
+<% if(obj.is_album) { %>
+    <input id="title" name="title" type="text" autocomplete="off" autocorrect="off" placeholder="Album Title" value="<%= (obj.title) ? _.escape(title) : '' %>" />
+    <input id="description" name="description" type="text" autocomplete="off" autocorrect="off" placeholder="Album Description" value="<%= (obj.description) ? _.escape(description) : '' %>" />
+
+    <div class="margin-top privacy">
+        <label id="privacy-level-label" for="privacy-level" class="left">Privacy:</label>
+        <div class="select-container">
+            <select id="privacy-level" name="privacy-level">
+                <option value="public" <%= (obj.privacy && privacy == 'public') ? 'selected="selected"' : '' %>>Public</option>
+                <option value="hidden" <%= (obj.privacy && privacy == 'hidden') ? 'selected="selected"' : '' %>>Hidden</option>
+                <option value="secret" <%= (obj.privacy && privacy == 'secret') ? 'selected="selected"' : '' %>>Secret</option>
+            </select>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <div id="image-container">
+        <div class="images-description"><span class="green">select</span> images</div>
+        <div id="images">
+            <div class="spinnerImg centered black loading"></div>
+        </div>
+    </div>
+
+    <div id="delete-container" class="left">
+        <input id="delete" type="button" value="delete" />
+    </div>
+    <div id="save-container" class="right">
+        <input id="save" data-icon="check"  data-iconpos="right" type="submit" value="save" />
+    </div>
+    <div class="clear"></div>
+
+    <input id="submit-to-gallery" type="button" value="submit to gallery" />
+<% } else { %>
+    <div class="edit-img">
+        <input id="title" name="title" type="text" autocomplete="off" autocorrect="off" placeholder="Image Title" value="<%= (obj.title) ? _.escape(title) : '' %>" />
+        <img data-id="<%= id %>" src="http://i.imgur.com/<%= id %>h.jpg" alt="<%= (obj.title) ? _.escape(title) : '' %>" />
+        <input id="description" name="description" autocomplete="off" autocorrect="off" type="text" placeholder="Image Description" value="<%= (obj.description) ? _.escape(description) : '' %>" />
+
+        <div id="save-container">
+            <input id="saveImage" data-icon="check"  data-iconpos="right" type="submit" value="save" />
+        </div>
+    </div>
+<% } %>
+</form>
+</script>
+<script type="text/template" id="GalleryInside">
+<div class="insideContainer">
+    <% if (!obj.isNonGalleryItem && !this.isSubredditInside()) { %>
+    <div class="image-info-bar">
+        <table>
+            <tr>
+                <td class="main-button-container">
+                    <div class="arrow-container textbox-dark">
+                        <div class="btn"><a class="arrow upvote <% if(obj.vote == 'up') {print('pushed')} %>" href="javascript:;"><span></span></a></div>
+                        <div class="btn"><a class="arrow downvote <% if(obj.vote == 'down') {print('pushed')} %>" href="javascript:;"><span></span></a></div>
+                    </div>
+                </td>
+                <td width="50">
+                    <div class="favorites textbox-dark">
+                        <div class="btn"><a class="favorite-icon <% if(obj.favorite) { print('pushed'); } %>" href="javascript:;"><span></span></a></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="point-container">
+                        <% if(!_.isUndefined(obj.ups) && !_.isUndefined(obj.downs)) { %>
+                        <div class="image-data"><span class='image-points'><%= ups-downs %></span> point<% ((ups-downs) == 1) ? print('') : print('s') %></div>
+                        <div class="stat-bar">
+                            <div class="stat-container">
+                                <div class="stat-vote">
+                                    <%
+                                        var absDown        = Math.abs(downs);
+                                        var total          = ups + absDown;
+                                        var percentUp      = ups / total * 100;
+                                        var percentDown    = absDown / total * 100;
+                                    %>
+                                    <div class="up-bar <% if(percentUp==1) print('total'); %>" style="width:<%= percentUp %>%;"></div>
+                                    <div class="down-bar <% if(percentDown==1) print('total'); %>" style="width:<%= percentDown %>%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <form class="comment-form-container" id="main-comment-form">
+        <textarea class="comment-form" placeholder="submit a comment"></textarea>
+        <div class="comment-button-container">
+            <button class="btn save">submit comment</button>
+            <div class="counter">140</div>
+        </div>
+    </form>
+    <div class="comment-feed-container"></div>
+    <% } else { %>
+        <div class="image-info-bar non-gallery-item">
+            <table>
+                <tr>
+                    <td width="50">
+                        <div class="favorites textbox-dark">
+                            <div class="btn"><a class="favorite-icon <% if(obj.favorite) { print('pushed'); } %>" href="javascript:;"><span></span></a></div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="point-container">
+                            <div class="image-data">
+                                <% if(!!obj.datetime) { %>
+                                  <%= Imgur.Utils.nicetime({'date': obj.datetime*1000, 'tense':true }) %> &middot; <%= Imgur.Utils.pluralize(Imgur.Utils.prettyPrint(obj.views), 'view') %>
+                                <% } %>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <% if(this.isSubredditInside() && obj.reddit_comments) { %>
+            <div class="reddit textbox">
+                <a class="textbox-dark" href="http://www.reddit.com<%= obj.reddit_comments %>" target="_blank">
+                    View comments on Reddit
+                </a>
+           </div>
+        <% } %>
+    <% } %>
+    <% if (Imgur.Mobile.OS === 'web') { %>
+        <a href="//imgur.com/<% if (obj.is_album) { %><%= obj.isNonGalleryItem ? 'a/' : 'gallery/' %><% } %><%= id %>?desktop=1" class="center-text margin-top display-block desktop-link">View this on the desktop site</a>
+    <% } %>
+</div></script>
+<script type="text/template" id="GalleryItem">
+<a href="javascript:;" data-url="<%= this.getLink() %>">
+    <img class="unloaded imageThumb" width="<%= window.innerWidth/this.getGridSize() %>" height="<%= window.innerWidth/this.getGridSize() %>" data-id="<%= this.getId() %>" data-thumb="b" data-ext=".jpg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" />
+</a></script>
+<script type="text/template" id="GalleryProfile">
+<% if (Imgur.Model.Account.getInstance().id !== obj.url) { %>
+<a class="contextOverlay send-message" data-url="/user/<%= obj.url %>/message"><span></span></a>
+<% } %>
+<div id="user-header">
+    <h1 id="username"><%= obj.url %></h1>
+
+    <div>
+        <div class="user-info-container">
+            <% if(obj.medal) { %>
+                <div class="medal left">
+                    <img src="http://s.imgur.com/images/medal/<%= obj.medal %>.png" />
+                </div>
+            <% } %>
+            <div id="user-info" class="textbox <%= (obj.medal) ? 'has-medal' : '' %>">
+                <% if(obj.reputation != null) { %>
+                    <span id="reputation-text" class="<%= (obj.reputation > 0) ? 'green' : 'red' %>"><%= obj.reputation_text %></span>
+
+                    <div>
+                        <div class="reputation <%= (obj.medal) ? '' : 'left' %>">
+                            <span class="lightblue"><%= obj.reputation_pretty %></span> reputation
+                        </div>
+                        <div class="member-since">
+                            <%= (obj.medal) ? '' : '- ' %>member since <span class="lightblue"><%= obj.created %></span>
+                        </div>
+                    </div>
+                <% } %>
+
+                <%  if(obj.bio) { %>
+                    <a class="bio" href="javascript:;">view bio</a>
+                    <div class="textbox-dark bio-text" style="display:none;"><%= Imgur.Utils.linkify(Imgur.Utils.escape(obj.bio)) %></div>
+                <% } %>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+
+<div id="user-options" class="page-header">
+    <div class="select-container">
+        <select class="select-user-options" data-theme="b">
+            <option value="Comments">view gallery comments</option>
+            <% if (Imgur.Model.Account.getInstance().id === obj.url) { %>
+                <option value="Replies">view gallery replies</option>
+            <% } %>
+            <option value="Submissions">view gallery submissions</option>
+            <option value="Favorites">view gallery favorites</option>
+            <option value="Trophies">view gallery trophies</option>
+        </select>
+    </div>
+</div>
+
+<div id="display-options">
+    <!-- display the selection stuff here -->
+</div>
+</script>
+<script type="text/template" id="Header">
+<div class="headerContainer">
+    <div class="location-bar">
+        <% if (obj.backButtonEnabled) { %>
+            <a class='back-btn<%= (backButtonGoesToGallery) ? " backToGallery" : "" %>' data-theme="b" href="javascript:;">
+        <% } else if(obj.isSubreddit || obj.pageTitle === "search") { %>
+            <a class="back-btn back-to-gallery" data-theme="b" href="javascript:;">
+        <% } else { %>
+            <a class="menu-btn" data-theme="b" href="javascript:;">
+        <% } %>
+                <div class='<%= (obj.convoIcon) ? "convo-icon " : "" %>logo-icon'>&nbsp;
+                    <div id="notification-count" class="notification <%= (notificationNum === 0) ? 'hide' : '' %>"><%= notificationNum %></div>
+                </div>
+                <h1 class="location-text"><%= _.escape(pageTitle) %></h1>
+            </a>
+    </div>
+    <% if(!_.isUndefined(context) && context !== 'none') { %>
+        <div class="action-nav">
+            <ul>
+                <% if(context === 'option-dd' && Imgur.Utils.isGalleryCarousel()) { %>
+                    <li class="next-btn"><a href="javascript:;">&nbsp;</a></li>
+                <% } %>
+                <li class="<%= context %>-btn"><a href="javascript:;" data-url="<%= (context === 'upload') ? '/upload' : '' %>"><span>&nbsp;</span></a></li>
+                <% if (context === 'upload' || ((context === 'option-dd' || context === 'add') && Backbone.history.fragment.match(/messages/))) { %>
+                    <li class="refresh-btn"><a href="javascript:;"><span>&nbsp;</span></a></li>
+                <% } else if(context === 'option-dd') { %>
+                    <li class="share-btn">
+                        <a href="javascript:;"><span>&nbsp;</span></a>
+                        <% if(Imgur.Mobile.ENV !== 'release') { %>
+                            <select class="header-share">
+                                <option value="facebook">Facebook</option>
+                                <option value="reddit">Reddit</option>
+                                <option value="twitter">Twitter</option>
+                                <option value="tumblr">Tumblr</option>
+                                <option value="addthis">More sharing options</option>
+                                <option value="cancel" selected>Cancel</option>
+                            </select>
+                        <% } %>
+                    </li>
+                <% } else { %>
+                    <li></li>
+                <% } %>
+            </ul>
+        </div>
+    <% } %>
+</div>
+</script>
+<script type="text/template" id="Image">
+ <div class="inside-gallery-item">
+    <% if(obj.showLinks) { %>
+      <div>
+          <table class="image-links">
+              <tr>
+                  <td class="selectholder select-container">
+                      <select id="embedlinks">
+                          <option value="http://imgur.com/<%= id %>" data-linktype="Link">Link</option>
+                          <option value="http://i.imgur.com/<%= id %>.jpg" data-linktype="Direct Link">Direct Link</option>
+                          <option value="<a href='http://i.imgur.com/<%= id %>' title='<%- obj.title %>'><img src='http://i.imgur.com/<%= id %>.jpg' alt='<%- obj.title %>' title='Hosted by imgur.com' /></a>" data-linktype="HTML Image">HTML Image</option>
+                          <option value="[IMG]http://i.imgur.com/<%= id %>.jpg[/IMG]" data-linktype="BBCode">BBCode</option>
+                          <option value="[URL=http://imgur.com/<%= id %>][IMG]http://i.imgur.com/<%= id %>.jpg[/IMG][/URL]" data-linktype="Linked BB">Linked BB</option>
+                          <option value="[Imgur](http://i.imgur.com/<%= id %>.jpg)" data-linktype="Markdown Link">Markdown Link</option>
+                          <% if(obj.deletehash != null && obj.deletehash.length === 15) { %>
+                              <option value="http://imgur.com/delete/<%= deletehash %>" data-linktype="Deletion Link">Deletion Link</option>
+                          <% } %>
+                      </select>
+                  </td>
+                  <td class="image-link-td">
+                      <div>
+                          <input type="text" class="image-link" data-url="http://imgur.com/<%= id %>" value="http://imgur.com/<%= id %>"/>
+                      </div>
+                  </td>
+              </tr>
+          </table>
+      </div>
+    <% } %>
+
+    <% if(obj.title) { %>
+         <h2>
+            <%- obj.title %>
+                <% if(!_.isUndefined(obj.account_url) && !_.isNull(obj.account_url)) { %>
+                <span class="accountlink small-font"> - </span>
+                <a class="op-account small-font" href="javascript:;" data-url="/user/<%= account_url.toLowerCase() %>"><%= Imgur.Utils.getAuthorName(account_url) %></a>
+            <% } %>
+        </h2>
+    <% } %>
+
+   <div style="<%=this.getContainerHeightCss() %>" class="image-container<% if(this.showPlayButton()) { %> gif-image<% } %>" data-id="<%= id %>">
+      <% if(Imgur.Mobile.OS != 'web') { %>
+         <div class="image-progress-wrapper">
+            <div id="progress-<%= id %>" class="image-progress"></div>
+         </div>
+      <% } %>
+
+      <img id="<%= id %>" data-id="<%= id %>" data-thumb="<%= this.imageThumbnailSize() %>" data-ext="<%= this.getImageType() %>" <% if(obj.isHidden) { %> class="unloaded" <% } %> src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="<%- obj.title %>" />
+
+      <% if(this.showPlayButton()) { %>
+         <div class="gif-unloaded-cover" data-id="<%= id %>">
+            <div class="gif-player"><div class="giftext"><%= Imgur.Utils.bytesToSize(size, true) %></div><div class="triangle"></div></div>
+         </div>
+      <% } %>
+    </div>
+
+   <% if(obj.description) { %>
+      <div class="image-description textbox-dark"><%= Imgur.Utils.linkify(Imgur.Utils.escape(obj.description)) %></div>
+   <% } %>
+</div>
+</script>
+<script type="text/template" id="ImageViewer">
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
+        <style>
+        body {
+            font-family: Arial,Helvetica,sans-serif;
+            font-size: 0.5em;
+            padding: 0.5em;
+            margin: 0;
+            background: #121211;
+            color : #DDDDD1;
+            text-align: center;
+        }
+
+        img {
+            -webkit-transform   : translate3d(0,0,0);
+            max-width           : 100%;
+        }
+
+        table {
+            width : 100%;
+            margin-bottom: 5px;
+        }
+
+        input {
+            border-collapse: separate;
+            border-color: gray;
+            min-height: 1.4em;
+            line-height: 1.4em;
+            font-size: 16px;
+            color : #DDDDD1;
+            border: 0;
+            padding: .4em 0;
+            margin: 0;
+            display: block;
+            background: transparent none;
+            outline: 0!important;
+            font-family: Arial,Helvetica,sans-serif;
+        }
+
+        th {
+            background: #121211;
+            color : #DDDDD1;
+            font-family: Arial,Helvetica,sans-serif;
+            width: 100px;
+            -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+            -webkit-user-select: none;                 /* prevent copy paste, to allow, change 'none' to 'text' */
+        }
+
+        input {
+            background       : #2b2b2b;
+            padding          : 5px;
+            border-radius    : 4px;
+            font-size        : 14px;
+            width            : 100%;
+        }
+
+        .select-container {
+            overflow: hidden;
+            border: 1px solid #444442;
+            -webkit-border-radius: 25px;
+            -moz-border-radius: 25px;
+            border-radius: 25px;
+            padding-right: 25px;
+            margin-bottom: 25px;
+            margin-top: -8px;
+            position: relative;
+            display: inline-block;
+            margin-bottom: -8px;
+            background-color: #242424;
+            background-position: 93% 9px;
+            background-repeat: no-repeat;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAHCAYAAAA8sqwkAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYxIDY0LjE0MDk0OSwgMjAxMC8xMi8wNy0xMDo1NzowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNS4xIE1hY2ludG9zaCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo2MUI1Rjc3OURDM0MxMUUyQTg0REJENDlERUYxRTk0NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo2MUI1Rjc3QURDM0MxMUUyQTg0REJENDlERUYxRTk0NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjYxQjVGNzc3REMzQzExRTJBODREQkQ0OURFRjFFOTQ3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjYxQjVGNzc4REMzQzExRTJBODREQkQ0OURFRjFFOTQ3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/0KSiwAAAIBJREFUeNpibLnO8IGBgWECFIPYDAdynUAUg8PkfQxQIADEBSAhRqCGBiCjHog/AnEDVCMyKICK8wNxI0gDCMwH4gSogodQRQxQzfJQ9gIgTmSBchKhdAJUwXo0WxbA1DAhCSZCJRhwKUbXgE0TimIQYMFiYiI0VBjQFYMAQIABAKdvGscW0BTBAAAAAElFTkSuQmCC');
+        }
+
+        select {
+            background: rgba(0, 0, 0, 0);
+            z-index: 1;
+            font-size: 12px;
+            color: #85BF25;
+            line-height: 1;
+            overflow: hidden;
+            width: 200%;
+            border: 0;
+            border-radius: 0;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .select-container select {
+            padding: 4px 0px 4px 8px;
+        }
+
+        </style>
+    </head>
+    <body>
+    <script>
+        // https://developer.mozilla.org/en-US/docs/HTML/Using_the_application_cache#Gotchas
+        var cdnURL   = window.location.href.split('#img?imgurl=')[1];
+
+        var updateLink = function(newLink) {
+            var linkInput = document.getElementById('link');
+            linkInput.value = newLink;
+        };
+
+        document.write(
+            '<table>'+
+
+                '<tr>'+
+                    '<th><div class="select-container">'+
+                      '<select id="embedlinks" onchange="updateLink(this.value)">'+
+                        '<option value="'+cdnURL+'">Direct Link</option>'+
+                        '<option value="<a href=\''+cdnURL+'\'><img src=\''+cdnURL+'\'/></a>'+cdnURL+'">HTML Image</option>'+
+                        '<option value="[IMG]'+cdnURL+'[/IMG]">BBCode</option>'+
+                        '<option value="[URL='+cdnURL+'][IMG]'+cdnURL+'[/URL]">Linked BB</option>'+
+                        '<option value="[Imgur]('+cdnURL+')">Markdown</option>'+
+                      '</select>'+
+                    '</div></th>'+
+                    '<td>'+
+                        '<input id="link" type="text" value="'+cdnURL+'"/>'+
+                    '</td>'+
+                '</tr>'+
+            '</table>'+
+            '<img src="'+cdnURL+'"/>'
+        );
+    </script>
+    <script async="" type="text/javascript" src="http://partner.googleadservices.com/gpt/pubads_impl_31.js"></script><script type="text/javascript" src="https://pagead2.googlesyndication.com/pagead/osd.js"></script></head><body class="android modern" style=""><div id="userPanel" class="user-menu noSwipe">
+<div class="overlay"></div>
+<div class="menu-holder">
+    <ul class="main-action-nav">
+
+        <li class="menu-search-bar textbox-dark no-br pr">
+            <input id="search" type="text" value="" autocomplete="off" autocorrect="off" placeholder="search images or r/subreddit">
+            <div class="clearButton">x</div>
+        </li>
+
+        <li>
+            <a href="javascript:;" data-url="/">gallery</a>
+            <div class="split-gallery-icon">
+                <select id="gallerySelector" class="gallery-options ui-icon ui-icon-gear">
+                    <option value="main">Main gallery</option>
+                    <option value="random">Random mode</option>
+                    <option value="past">Past images</option>
+                    <option value="0" selected="">Cancel</option>
+                </select>
+            </div>
+        </li>
+        <li><a href="mailto:support@imgur.com?subject=Feedback%20for%20Imgur%20Mobile" class="feedback">feedback</a></li>
+    </ul>
+    <h1 class="green pr">
+
+    </h1>
+    <ul class="user-action-nav table">
+
+            <li class="inlineblock left"><a class="login"><span class="profile icon"></span>sign in</a>
+            </li><li class="inlineblock right"><a href="javascript:;" data-url="/register"><span class="profile icon"></span>register</a></li>
+
+    </ul>
+
+        <span id="desktopsite" class="center-text inlineblock"><a class="external" href="//imgur.com?desktop=1">View the desktop version of Imgur</a></span>
+
+</div>
+</div>
+
+<script type="text/template" id="Login">
+<div class="context-container">
+    <div class="signin-container">
+        <div id="error" class="error"></div>
+        <form action="">
+            <input id="username" type="text" autocomplete="off" autocorrect="off" name="username" placeholder="username or email address" />
+            <input id="password" type="password" autocomplete="off" autocorrect="off" name="password" placeholder="password" />
+            <input type="submit" name="submit" value="sign in" />
+        </form>
+        or <a id="register" href="javascript:;">register</a>
+    </div>
+</div>
+<div class="other-accounts">
+    sign in using another account
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <button id="google" type="button">
+                        Google
+                    </button>
+                </td>
+                <td>
+                    <button id="facebook" type="button">
+                        Facebook
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="twitter" type="button">
+                        Twitter
+                    </button>
+                </td>
+                <td>
+                    <button id="yahoo" type="button">
+                        Yahoo
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</script>
+<script type="text/template" id="Message">
+<% if(obj.isThread != undefined && obj.isThread) { %>
+    <li id="reply-bar">
+        <div class="reply-form-container">
+            <textarea placeholder="Type reply"></textarea>
+            <button class="btn submit">send</button>
+        </div>
+    </li>
+    <li class="contextDDWrapper">
+        <ul class="image-dd thread-buttons">
+            <li><a class="report">report</a></li>
+            <li><a class="block">block</a></li>
+            <li><a class="delete">delete</a></li>
+        </ul>
+        <div class="overlay invisible"></div>
+    </li>
+<% } else { %>
+    <div class="context-container">
+        <form id="message-form">
+            <input type="text" class="username" placeholder="Enter username" value="<%= (obj.url == null) ? '' : url %>" />
+            <textarea placeholder="Enter message"></textarea>
+            <input class="submit" type="submit" value="send" />
+        </form>
+    </div>
+<% } %>
+</script>
+<script type="text/template" id="NotFound">
+<div class="explanation">
+    <h1>Page not found!</h1>
+
+    <div class="textbox">
+        If you're looking for an image, then it's probably been deleted or may
+        not have existed at all. Head back to the place you came and continue
+        browsing; there's nothing more to see here.
+    </div>
+</div></script>
+<script type="text/template" id="OverCapacity">
+<div class="explanation">
+    <h1>Imgur is over capacity!</h1>
+
+    <div class="textbox">
+        Sorry! We're busy running around with our hair on fire because Imgur is
+        over capacity! This can happen when the site is under a very heavy load,
+        or while we're doing maintenance.
+        <br /><br />
+
+        Please try again in a few minutes.
+    </div>
+</div></script>
+<script type="text/template" id="Page-Gallery">
+<% if(obj.sectionString == 'User uploaded') { %>
+    <div class="uploaded-images-links" style="position:relative">
+        <textarea class="image-collection-links"><%= this.getLinks() %></textarea>
+    </div>
+<% } else { %>
+    <li class="page-header">
+        <h3>
+            <% if(obj.isSubreddit) { %>
+                <div class="select-container">
+                    <select name="section" class="section select-user-options" id="section">
+                            <option value="time" <%= (obj.section == 'time')  ? 'selected="selected"' : ''%>>New</option>
+                            <option value="top" <%= (obj.section == 'top')  ? 'selected="selected"' : ''%>>Top</option>
+                    </select>
+                </div>
+                <span class="option-text"><%= obj.subreddit %> images</span>
+            <% } else if(obj.query){ %>
+                Gallery results for "<%= unescape(obj.query) %>"
+            <% } else { %>
+                <% if (!obj.isSubreddit && obj.section !== 'random') { %>
+                    <div class="select-container">
+                        <select name="section" class="section select-user-options" id="section">
+                            <option value="hot" <%= (obj.section === 'hot')  ? 'selected="selected"' : ''%>>Most viral</option>
+                            <option value="new" <%= (obj.section === 'new')  ? 'selected="selected"' : ''%>>User submitted</option>
+                            <option value="top" <%= (obj.section === 'top')  ? 'selected="selected"' : ''%>>Highest scoring</option>
+                        </select>
+                    </div>
+                <% } else { %>
+                    <span class="option-text"><%= _.isUndefined(obj.sectionString) ? '' : _.escape(obj.sectionString) %></span>
+                <% } %>
+               <span class="option-text">images</span>
+            <% } %>
+
+                <% if(obj.isSubreddit && obj.section === 'time' || obj.query) { %>
+                <% } else if(obj.isSubreddit || obj.section === 'top') { %>
+                    <span class="option-text">of</span>
+                    <div class="select-container">
+                        <select name="sort" class="sort select-user-options" id="sort">
+                            <option value="day"   <%= (obj.sort === 'day')   ? 'selected="selected"' : ''%>>today</option>
+                            <option value="week"  <%= (obj.sort === 'week')  ? 'selected="selected"' : ''%>>this week</option>
+                            <option value="month" <%= (obj.sort === 'month') ? 'selected="selected"' : ''%>>this month</option>
+                            <option value="year"  <%= (obj.sort === 'year')  ? 'selected="selected"' : ''%>>this year</option>
+                            <option value="all"   <%= (obj.sort === 'all')   ? 'selected="selected"' : ''%>>all time</option>
+                        </select>
+                    </div>
+                <% } else if (obj.section !== 'random') { %>
+                    <span class="option-text">by</span>
+                    <div class="select-container">
+                        <select name="sort" class="sort select-user-options" id="sort">
+                            <option value="viral" <%= (obj.sort === 'viral') ? 'selected="selected"' : ''%>>popularity</option>
+                            <option value="time"  <%= (obj.sort === 'time')  ? 'selected="selected"' : ''%>>newest</option>
+                        </select>
+                    </div>
+                <% } %>
+
+                <% if(obj.useDate) { %>
+                    <span class="option-text">(<%= obj.date %>)</span>
+                <% } else if(obj.section == 'top') { %>
+                    <% if(obj.page>0) { %>
+                        <span class="small-font option-text">(<%= obj.page+1 %>)</span>
+                    <% } %>
+                <% } else if(obj.page>0) { %>
+                    <span class="small-font option-text">(<%= obj.page+1 %>)</span>
+                <% } %>
+        </h3>
+        <% if(obj.section == 'new') { %>
+            <div class="viral-block border-outline">
+                <div class="show-viral border-inner-line <%= (obj.showingViral) ? 'showing' : '' %>"><div class="dot"></div>viral</div>
+            </div>
+        <% } %>
+    </li>
+<% } %>
+</script>
+<script type="text/template" id="PermissionDenied">
+<div class="explanation">
+    <h1>Permission Denied</h1>
+
+    <div class="textbox">
+        You don't have access to view this account. Either the account is
+        private or you need to sign in.
+    </div>
+</div></script>
+<script type="text/template" id="Register">
+<div class="context-container">
+    <form action="">
+        <div>
+            <h2></h2>
+            <input id="url" autofocus="autofocus" name="url" type="text" class="required" autocomplete="off" autocorrect="off" alpha_numeric="true" minlength="4" maxlength="64" placeholder="username"/>
+        </div>
+
+        <div>
+            <h2></h2>
+            <input id="email" name="email" type="text" autocomplete="off" autocorrect="off" class="required email" maxlength="255" placeholder="email address"/>
+        </div>
+
+        <div>
+            <h2></h2>
+            <input id="password" name="password" type="password" autocomplete="off" autocorrect="off" class="required" minlength="6" maxlength="255" placeholder="password"/>
+        </div>
+
+        <div>
+            <h2></h2>
+            <input id="confirmPassword" name="confirm_password" type="password" autocomplete="off" autocorrect="off" equalTo="#password" minlength="6" maxlength="255" placeholder="retype password"/>
+        </div>
+        <div class="tos-container">
+            <h2></h2>
+            <input type="checkbox" name="agree" id="agree" class="required"/>
+            <label for="agree">I agree to the</label><a target="_blank" class="register-tos" href="//imgur.com/tos">terms of service</a>
+        </div>
+
+        <div>
+            <div id="recaptcha" class="recaptcha"></div>
+        </div>
+
+        <div id="error" class="error"></div>
+        <input type="submit" class="btn" value="submit" />
+    </form>
+</div></script>
+<script type="text/template" id="Upload">
+<div class="upload-form-container">
+    <% if(Imgur.Mobile.ENV === 'release') { %>
+    <table id="uploadtype" class="ui-grid-b">
+    <% } else { %>
+    <table id="uploadtype" class="ui-grid-a">
+    <% } %>
+        <tbody>
+            <tr>
+                <td class="ui-block-a" id="device-button" button="phone">
+                    <span class="phone"></span>
+                    <p>device</p>
+                    <form enctype="multipart/form-data">
+                        <input type="file" upload="file" multiple/>
+                    </form>
+                </td>
+            <% if(Imgur.Mobile.ENV === 'release') { %>
+                <td class="ui-block-b" button="camera-phone">
+                    <div class="camera-container">
+                        <span class="camera-phone"></span>
+                        <p>camera</p>
+                    </div>
+                </td>
+                <td class="ui-block-c">
+            <% } else { %>
+                <td class="ui-block-b">
+            <% } %>
+                    <textarea id="upload-url" placeholder="paste web URLs" name="url" value="" upload="url"></textarea>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="upload-progress" class="hide"><span class="count"></span></div>
+    <div id="options" class="ui-grid-b hide">
+        <div id="addtogallery" class="ui-block-a ui-btn center-text">
+            Add to <br />gallery
+        </div>
+        <div id="createalbum" class="ui-block-b ui-btn center-text">
+            Create <br />album
+        </div>
+        <div class="ui-block-c upload-button ui-btn center-text">
+            <span class="icon upload"></span>
+            <span class="ui-btn-text green">start upload</span>
+        </div>
+    </div>
+    <div id="album-upload-fields" class="hide center-text">
+        <input id="title" name="title" type="text" class="margin-bottom" autocomplete="off" autocorrect="off" placeholder="Album Title (optional)"/>
+        <input id="description" name="description" class="margin-bottom" type="text" autocomplete="off" autocorrect="off" placeholder="Album Description (optional)"/>
+    </div>
+    <div id="image-queue-list" class="hide"></div>
+    <div id="imgur-tos">By uploading, you agree to our <a href="javascript:Imgur.Utils.openExternalLink({}, 'http://imgur.com/tos');">terms of service</a>.</div>
+</div>
+
+<div class="disabled phoneButtonCover">
+    <table width="100%" height="100%">
+        <tr>
+            <td align="center" class="red">Your version of iOS does not support file uploads!</td>
+        </tr>
+    </table>
+</div>
+</script>
+<script type="text/template" id="UserMenu">
+<div class="overlay"></div>
+<div class="menu-holder">
+    <ul class="main-action-nav">
+        <% if(Imgur.Mobile.OS !== 'ios') { %>
+        <li class="menu-search-bar textbox-dark no-br pr">
+            <input id="search" type="text" value="" autocomplete="off" autocorrect="off" placeholder="search images or r/subreddit">
+            <div class="clearButton">x</div>
+        </li>
+        <% } %>
+        <li>
+            <a href="javascript:;" data-url="/">gallery</a>
+            <div class="split-gallery-icon">
+                <select id="gallerySelector" class="gallery-options ui-icon ui-icon-gear">
+                    <option value="main">Main gallery</option>
+                    <option value="random">Random mode</option>
+                    <option value="past">Past images</option>
+                    <option value="0" selected>Cancel</option>
+                </select>
+            </div>
+        </li>
+        <li><a href="mailto:support@imgur.com?subject=Feedback%20for%20Imgur%20Mobile" class="feedback">feedback</a></li>
+    </ul>
+    <h1 class="green pr">
+        <% if(!_.isUndefined(obj.url)) { %>
+            <%= url %>
+            <div class="split-gallery-icon">
+                <span class="account-settings ui-icon ui-icon-gear" data-href="/user/<%= url %>/settings">&nbsp;</span>
+            </div>
+        <% } %>
+    </h1>
+    <ul class="user-action-nav table">
+        <% if(!_.isUndefined(obj.url)) { %>
+            <!-- NOTE The </li> are done this way on purpose...inline elements take whitespace into effect which effects styling -->
+            <li class="inlineblock left"><a href="javascript:;" data-url="/account/<%= url %>/images">images</a>
+            </li><li class="inlineblock right"><a href="javascript:;" data-url="/account/<%= url %>/albums">albums</a>
+            </li><li class="inlineblock left"><a href="javascript:;" data-url="/account/<%= url %>/favorites">favorites</a>
+            </li><li class="inlineblock right"><a href="javascript:;" data-url="/account/<%= url %>/messages">messages<div class="notification center-text  menu-notification messages-count hide"></div></a></li>
+            <li class="inlineblock left"><a href="javascript:;" data-url="/user/<%= url %>">gallery profile<div class="notification center-text menu-notification replies-count hide"></div></a>
+            </li><li class="inlineblock right"><a class="logout">logout</a></li>
+        <% } else { %>
+            <li class="inlineblock left"><a class="login"><span class="profile icon"></span>sign in</a>
+            </li><li class="inlineblock right"><a href="javascript:;" data-url="/register"><span class="profile icon"></span>register</a></li>
+        <% } %>
+    </ul>
+    <% if(Imgur.Mobile.OS === 'web') { %>
+        <span id="desktopsite" class="center-text inlineblock"><a class="external" href="//imgur.com?desktop=1">View the desktop version of Imgur</a></span>
+    <% } %>
+</div>
+</script>
+
+
+
+
+
+
+
+
+        <div data-role="page" class="page-container"><div id="header" class="header ui-bar-a absolute transition">
+<div class="headerContainer">
+    <div class="location-bar">
+
+            <a class="back-btn backToGallery" data-theme="b" href="javascript:;">
+
+                <div class="logo-icon">&nbsp;
+                    <div id="notification-count" class="notification hide">0</div>
+                </div>
+                <h1 class="location-text">gallery</h1>
+            </a>
+    </div>
+
+        <div class="action-nav">
+            <ul>
+
+                    <li class="next-btn"><a href="javascript:;">&nbsp;</a></li>
+
+                <li class="option-dd-btn"><a href="javascript:;" data-url=""><span>&nbsp;</span></a></li>
+
+                    <li class="share-btn">
+                        <a href="javascript:;"><span>&nbsp;</span></a>
+
+                            <select class="header-share">
+                                <option value="facebook">Facebook</option>
+                                <option value="reddit">Reddit</option>
+                                <option value="twitter">Twitter</option>
+                                <option value="tumblr">Tumblr</option>
+                                <option value="addthis">More sharing options</option>
+                                <option value="cancel" selected="">Cancel</option>
+                            </select>
+
+                    </li>
+
+            </ul>
+        </div>
+
+</div>
+</div>
+
+            <div data-role="content" class="content"><div class="gallery-carousel" style="min-height: 235px; "><div class="contextOverlay nextItem transition"><span>&nbsp;</span></div><div class="galleryInsideView">
+<div class="insideContainer"><div class="main-content">
+ <div class="inside-gallery-item">
+
+
+
+         <h2>
+            Tumblr is doing a thing tomorrow, and since most of us here on imgur looove cats, I thought we could join in!
+
+                <span class="accountlink small-font"> - </span>
+                <a class="op-account small-font" href="javascript:;" data-url="/user/madnama">Madnama</a>
+
+        </h2>
+
+
+   <div class="pinch-zoom-container" style="position: relative; height: 363.00000000000006px; "><div style="-webkit-transform-origin-x: 0%; -webkit-transform-origin-y: 0%; position: absolute; -webkit-transform: scale(1, 1) translate(0px, 0px); " class="image-container" data-id="XBM9emW">
+
+
+      <img id="XBM9emW" data-id="XBM9emW" data-thumb="" data-ext=".png" src="http://i.imgur.com/XBM9emW.png" alt="Tumblr is doing a thing tomorrow, and since most of us here on imgur looove cats, I thought we could join in!" class="loaded">
+
+
+    </div></div>
+
+
+</div>
+</div>
+
+    <div class="image-info-bar">
+        <table>
+            <tbody><tr>
+                <td class="main-button-container">
+                    <div class="arrow-container textbox-dark">
+                        <div class="btn"><a class="arrow upvote " href="javascript:;"><span></span></a></div>
+                        <div class="btn"><a class="arrow downvote " href="javascript:;"><span></span></a></div>
+                    </div>
+                </td>
+                <td width="50">
+                    <div class="favorites textbox-dark">
+                        <div class="btn"><a class="favorite-icon " href="javascript:;"><span></span></a></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="point-container">
+
+                        <div class="image-data"><span class="image-points">4282</span> points</div>
+                        <div class="stat-bar">
+                            <div class="stat-container">
+                                <div class="stat-vote">
+
+                                    <div class="up-bar " style="width:96.95175438596492%;"></div>
+                                    <div class="down-bar " style="width:3.0482456140350878%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody></table>
+    </div>
+    <form class="comment-form-container" id="main-comment-form">
+        <textarea class="comment-form" placeholder="submit a comment"></textarea>
+        <div class="comment-button-container">
+            <button class="btn save">submit comment</button>
+            <div class="counter">140</div>
+        </div>
+    </form>
+    <div class="comment-feed-container"><div class="comment-feed"><div class="textbox-dark commentsorter">
+
+    <span id="comment-count">210 comments</span> sorted by
+    <div class="select-container">
+        <select id="commentSort">
+
+            <option value="best" selected="">best</option>
+            <option value="new">new</option>
+            <option value="top">top</option>
+        </select>
+    </div>
+
+</div><div class="comment" id="91532343">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/childrenscrusade">childrenscrusade</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">823</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            ooh now I can tell people I have plans for tomorrow
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="comment" id="91500348">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/againstdownvotefairies">againstdownvotefa...</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">830</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            Okay.  I will take 3 seconds out of my day tomorrow to do the thing.
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="comment" id="91499854">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/Veracity">Veracity</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">430</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            You have my bow.
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="adSlot btfSlot commentSlot"><div id="div-gpt-ad-btf-0" class=""><div id="google_ads_iframe_/4761660/MobileBTF_0__container__" style="border-top-width: 0pt; border-right-width: 0pt; border-bottom-width: 0pt; border-left-width: 0pt; border-top-style: none; border-right-style: none; border-bottom-style: none; border-left-style: none; border-color: initial; margin-top: auto; margin-right: auto; margin-bottom: auto; margin-left: auto; text-align: center; "><iframe id="google_ads_iframe_/4761660/MobileBTF_0" name="google_ads_iframe_/4761660/MobileBTF_0" width="320" height="50" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; border-style: initial; border-color: initial; vertical-align: bottom; " src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;"></iframe></div><iframe id="google_ads_iframe_/4761660/MobileBTF_0__hidden__" name="google_ads_iframe_/4761660/MobileBTF_0__hidden__" width="0" height="0" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; border-style: initial; border-color: initial; vertical-align: bottom; visibility: hidden; display: none; " src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;"></iframe></div></div><div class="comment" id="91498891">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/Madnama">Madnama</a>·
+                <span class="green"> OP </span>
+
+                <span>
+                    <span class="comment-points">324</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            And I mean come on, spaceships are pretty cool too.
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="comment" id="91529685">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/noah12345678987654321">noah1234567898765...</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">76</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            Hey guys lets do the thingggg and the stufffff
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="comment" id="91521152">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/cpnfantastic">cpnfantastic</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">117</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            Most imgurians probably Google that daily already. You're probably not going to give them that much of a bump here.
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="comment" id="91539322">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/FriendlyGrandma69">FriendlyGrandma69</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">42</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            I'm tagging all my shit as kitten in spaceships so you guys can see a bunch of sexy pics of me.
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="comment" id="91533540">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/escaped1">escaped1</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">24</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            As an Australian, done and done (and will continue to do so throughout the day)
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="comment no-thread" id="91534337">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/troublclef">troublclef</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">42</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            I feel like tumblr is imgur's estranged drug-addict cousin
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><div class="comment" id="91508867">
+
+
+    <div class="comment-text">
+        <div class="comment-info">
+
+            <a class="account-link" href="javascript:;" data-url="/user/Keelaknis">Keelaknis</a>·
+                <span class="green"></span>
+
+                <span>
+                    <span class="comment-points">8</span> points : 3 months ago
+                </span>
+        </div>
+        <p>
+            Shit I just did this right now. I thought tomorrow was Friday. I'm really depressed now.
+        </p>
+    </div>
+    <table class="comment-actions">
+        <tbody>
+            <tr>
+                <td class="vote-arrows">
+                    <a href="javascript:;">
+                        <span class="vote-arrow up"></span>
+                    </a>
+                    <a href="javascript:;">
+                        <span class="vote-arrow down"></span>
+                    </a>
+                </td>
+
+                <td class="report"><span class="user-button-report">report</span></td>
+
+
+                <td>
+                    <span class="pr display-block">
+                        share
+                        <select class="comment-share">
+                            <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="tumblr">Tumblr</option>
+                            <option value="addthis">More sharing options</option>
+                            <option value="cancel" selected="">Cancel</option>
+                        </select>
+                    </span>
+                </td>
+
+                <td class="user-reply"><span>reply</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="subcomment-thread">
+         <div class="bad-comments hide"></div>
+    </div>
+
+</div><a class="loadmore textbox-dark comment-limit center-text">Viewing 10 of 210 comments. Tap to load more.</a><div class="bad-comments hide"></div></div></div>
+
+
+        <a href="//imgur.com/XBM9emW?desktop=1" class="center-text margin-top display-block desktop-link">View this on the desktop site</a>
+
+</div><div class="contextDDWrapper">
+<ul class="image-dd">
+    <li><a class="iteminfo" href="javascript;">image info</a></li>
+
+        <li><a class="newtab" href="http://i.imgur.com/XBM9emW.jpg">open image in tab</a></li>
+
+
+
+
+
+
+            <li><a class="report" href="javascript:;">report</a></li>
+
+
+</ul>
+<div class="overlay invisible"></div></div></div><div class="swipe-arrow left"><span></span></div><div class="swipe-arrow right"><span></span></div></div></div>
+            <div id="preloadedImages"></div>
+        <div id="div-gpt-ad-default-0" class="hide"></div></div>
+
+
+    <script type="text/javascript">
+        // |INDEXPATH|
+        initApp();
+    </script>
+
+
+<iframe id="google_osd_static_frame_8573757444974" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px; "></iframe></body></html>
