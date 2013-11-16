@@ -38,9 +38,11 @@
             "watch movie"<br>
             <br>
             "be happy"<br>
+            <br>
             </h6>
             </center>
             <center>
+            <h5><a href="https://github.com/drProton/hipsterpics/blob/master/README.md">What is this?</a></h5>
             <br><br>
             <br><br>
             --------
