@@ -59,7 +59,7 @@ class crawler:
                 for myurl1 in myword1['picurls']:
                     for myurl2 in myword2['picurls']:
                         if myurl1['picurl'] == myurl2['picurl']:
-                            print "pair: " + str(myword1['word')] + " " + str(myword2['word']) + '\n'
+                            print "pair: " + str(myword1['word']) + " " + str(myword2['word']) + '\n'
 
     # Close the database
     def __del__(self):
