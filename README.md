@@ -10,7 +10,7 @@ Results are ranked 35% on a simple frequency analysis based on the words in the 
 is due to input from a click-tracking, artificial neural network. Users are encouraged to click one of the ten
 ranked results, whichever looks the most "hipster-looking."
 
-Theoretically, with enough ongoing clicks and a stronger initial spread of photos, this neural network could 
+Theoretically, with enough ongoing clicks and a strong initial spread of photos, this neural network could 
 become the best predictor of evolving trends within the "hipster" community. To monetize, experiments could 
 be conducted using ad content focused on the opposite of observed "hip" trends.
 
