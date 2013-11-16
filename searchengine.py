@@ -39,13 +39,13 @@ class crawler:
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
         
+        # print status of database
         print "NUMBER OF EDGES IN NEURAL NETWORK: " + str(self.db.nn.count()) + '\n'
         print "NUMBER OF WORDS IN DATABASE: " + str(self.db.words.count()) + '\n'
-
         mywords = self.db.words.find()
         urls = set()
         for db_word in mywords:
-            print "db_word['word']: " + str(db_word['word']) + '\n'
+            #print "db_word['word']: " + str(db_word['word']) + '\n'
             for db_url in db_word['picurls']:
                 urls.add(db_url['picurl'])
         print "NUMBER OF PICTURES IN DATABASE: " + str(len(urls)) + '\n'
@@ -68,6 +68,7 @@ class crawler:
         print "words: " + str(words) + '\n'
 
         # Link each word to the picurl on the page
+        if len(words) < 50: return
         for i in range(len(words)):
             #print "<-- i: " + str(i) + '\n'
             #print "<- url: " + str(url) + '\n'
