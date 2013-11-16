@@ -28,9 +28,9 @@
             <div class="resume">
                 <div class="page1">
                 <center><h5>Page 1</h5></center>
-                <img src="http://i.imgur.com/Fmp2f2W.jpg" height=900 width=750>
+                <center><img src="http://i.imgur.com/Fmp2f2W.jpg" height=900 width=750></center>
                 <center><h5>Page 2</h5></center>
-                <img src="http://i.imgur.com/iiiM7gL.jpg" height=900 width=750>
+                <center><img src="http://i.imgur.com/iiiM7gL.jpg" height=900 width=750></center>
                 </div>  
             </div>
             <center>

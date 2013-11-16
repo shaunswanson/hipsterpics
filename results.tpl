@@ -77,19 +77,23 @@
                 <br><br><br>
                 </center>
                 %end
-                <center><a href="/">Try another query?</a></center>
-                </center>
-                <center>
-                <br><br>
-                <br><br>
-                --------
-                <h3>Would you like to hire me for a machine learning role?</h3>
-                <h5>Check out my <a href="/resume">resume</a>.</h5>
-                <h5>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h5>
-                <h3>This project is open-source.</h3>
-                <h5>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h5>
-                </center>
             </div>
+            <div class = "backlink">
+                <br>
+                <center><a href="/">Try another query?</a></center>
+            </div>
+        </div>
+        <div class = "footer">
+            <center>
+            <br><br>
+            <br><br>
+            --------
+            <h3>Would you like to hire me for a machine learning role?</h3>
+            <h5>Check out my <a href="/resume">resume</a>.</h5>
+            <h5>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h5>
+            <h3>This project is open-source.</h3>
+            <h5>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h5>
+            </center>
         </div>
     </body>
 </html>

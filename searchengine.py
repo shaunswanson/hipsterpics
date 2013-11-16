@@ -10,7 +10,7 @@ import re
 import nn
 import os
 
-ignorewords = set(['the','of', 'a', 'to', 'and','in','is', 'you', 'comments','it','points',':','hours','ago','days','months','years', 'point', 'reply','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','deleted','comment','OP','op','repost','imgur']) 
+ignorewords = set(['the', 'this', 'of', 'so', 'about', 'a', 'to', 'and','in','is', 'you', 'comments','it','points',':','hours','ago','days','months','years', 'point', 'reply','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','deleted','comment','OP','op','repost','imgur']) 
 mynet = nn.searchnet()
 
 from selenium import webdriver
@@ -55,10 +55,14 @@ class crawler:
 
         mywords = self.db.words.find()
         for myword1 in mywords:
+            print "myword1: " + str(myword1['word']) + '\n'
             for myword2 in mywords:
+                print "myword2: " + str(myword2['word']) + '\n'
                 for myurl1 in myword1['picurls']:
                     for myurl2 in myword2['picurls']:
                         if myurl1['picurl'] == myurl2['picurl']:
+                            print "myurl1: " + str(myurl1['picurl']) + '\n'
+                            print "myurl2: " + str(myurl2['picurl']) + '\n'
                             print "pair: " + str(myword1['word']) + " " + str(myword2['word']) + '\n'
 
     # Close the database
