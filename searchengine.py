@@ -122,17 +122,6 @@ class crawler:
     # search to the given depth, indexing pages
     # as we go 
     def crawl(self, pages, depth=5):
-        mywords = self.db.words.find()
-        for myword1 in mywords:
-            print "myword1: " + str(myword1['word']) + '\n'
-            for myword2 in mywords:
-                print "myword2: " + str(myword2['word']) + '\n'
-                for myurl1 in myword1['picurls']:
-                    for myurl2 in myword2['picurls']:
-                        if myurl1['picurl'] == myurl2['picurl']:
-                            print "myurl1: " + str(myurl1['picurl']) + '\n'
-                            print "myurl2: " + str(myurl2['picurl']) + '\n'
-                            print "pair: " + str(myword1['word']) + " " + str(myword2['word']) + '\n'
 
         for i in range(depth):
             newpages = set()

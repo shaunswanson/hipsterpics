@@ -29,11 +29,13 @@
             </div>
             <center>
             <br><br>
-            <h5>Note: the database is a bit sparse right now.</h5>
-            <h6>Some queries that will actually give results:</h6>
+            <h5>Note: the database is a bit sparse right now.<br>
+            Here are some queries that will actually give results<br>
+            (so you can see the mechanics):</h5>
             <h6>
             "be happy"<br>
-            "http com" (did i mention fun??)
+            <br>
+            "http com" (need faster crawlers...)
             </h6>
             </center>
             <center>

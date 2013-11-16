@@ -67,6 +67,7 @@
                 %end 
                 %if i == len(urls)-1:
                 </tr>
+                </table>
                 %end
                 %i += 1
                 %end
