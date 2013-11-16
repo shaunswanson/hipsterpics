@@ -2,7 +2,7 @@ hipsterpics
 ===========
 
 In one sentence, this project is a simple search engine (complete with a specialized crawler) that retrieves a ranked
-list of images from a galleries on imgur.com based on how well a user's query matches the content of the gallery's 
+list of images/gifs from galleries on imgur.com based on how well a user's query matches the content of the gallery's 
 comments. As a fun twist, the user is encouraged to input an activity they love so that they may see how hipsters
 have ruined it.
 
