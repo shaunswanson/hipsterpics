@@ -33,9 +33,11 @@
             Here are some queries that will actually give results<br>
             (so you can see the mechanics):</h5>
             <h6>
-            "be happy"<br>
+            "fight crime"<br>
             <br>
-            "http com" (need faster crawlers...)
+            "watch movie"<br>
+            <br>
+            "be happy"<br>
             </h6>
             </center>
             <center>
