@@ -29,15 +29,13 @@
             </div>
             <center>
             <br><br>
-            <h5>Note: the database is a bit sparse right now.<br>
-            Here are some queries that will actually give results<br>
-            (so you can see the mechanics):</h5>
+            <h5>Some fun queries to try:</h5>
             <h6>
             "fight crime"<br>
             <br>
-            "watch movie"<br>
+            "drive car"<br>
             <br>
-            "be happy"<br>
+            "be cool"<br>
             <br>
             </h6>
             </center>
@@ -45,12 +43,14 @@
             <h5><a href="https://github.com/drProton/hipsterpics/blob/master/README.md">What is this?</a></h5>
             <br><br>
             <br><br>
+            <br><br>
+            <br><br>
             --------
-            <h3>Would you like to hire me for a machine learning role?</h3>
-            <h5>Check out my <a href="/resume">resume</a>.</h5>
-            <h5>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h5>
-            <h3>This project is open-source.</h3>
-            <h5>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h5>
+            <h5>Would you like to hire me for a machine learning role?</h5>
+            <h6>Check out my <a href="/resume">resume</a>.</h6>
+            <h6>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h6>
+            <h5>This project is open-source.</h5>
+            <h6>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h6>
             </center>
         </div>
     </body>
