@@ -44,7 +44,7 @@ def initialize_driver():
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/53 "
         "(KHTML, like Gecko) Chrome/15.0.87"
     )
-    driver = webdriver.PhantomJS(executable_path='/Users/shaunswanson/Downloads/phantomjs-1.9.2-macosx/bin/phantomjs', port=0, desired_capabilities=dcap) # PhantomJS located at /Users/shaunswanson/Downloads/phantomjs-1.9.2-macosx/bin # ./vendor/phantomjs/bin/phantomjs
+    driver = webdriver.PhantomJS(executable_path='./vendor/phantomjs/bin/phantomjs', port=0, desired_capabilities=dcap) # PhantomJS located locally at /Users/shaunswanson/Downloads/phantomjs-1.9.2-macosx/bin #Located on heroku at ./vendor/phantomjs/bin/phantomjs
     #profile = FirefoxProfile() # FOR TESTING
     #profile.set_preference("dom.max_script_run_time", 600) # too short ???
     #profile.set_preference("dom.max_chrome_script_run_time", 600) # too short ???
