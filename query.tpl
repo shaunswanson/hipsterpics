@@ -45,7 +45,7 @@
             <br><br>
             <br><br>
             <br><br>
-            --------
+            --------<br>
             <h5>Would you like to hire me for a machine learning role?</h5>
             <h6>Check out my <a href="/resume">resume</a>.</h6>
             <h6>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h6>
