@@ -44,7 +44,7 @@ def initialize_driver():
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/53 "
         "(KHTML, like Gecko) Chrome/15.0.87"
     )
-    driver = webdriver.PhantomJS(executable_path='./vendor/phantomjs/bin/phantomjs', port=0, desired_capabilities=dcap) # PhantomJS located at /Users/shaunswanson/Downloads/phantomjs-1.9.2-macosx/bin
+    driver = webdriver.PhantomJS(executable_path='/Users/shaunswanson/Downloads/phantomjs-1.9.2-macosx/bin/phantomjs', port=0, desired_capabilities=dcap) # PhantomJS located at /Users/shaunswanson/Downloads/phantomjs-1.9.2-macosx/bin # ./vendor/phantomjs/bin/phantomjs
     #profile = FirefoxProfile() # FOR TESTING
     #profile.set_preference("dom.max_script_run_time", 600) # too short ???
     #profile.set_preference("dom.max_chrome_script_run_time", 600) # too short ???
@@ -155,61 +155,65 @@ class crawler:
     # Starting with a list of pages, do a breadth-first
     # search to the given depth, indexing pages
     # as we go 
-    def crawl(self, pages, depth=5):
+    def crawl(self):
 
-        for i in range(depth):
-            newpages = set()
-            for page in pages:
-                print "<-- crawling " + str(page) + '\n' 
-                driver, display = initialize_driver()
+        print "self.db.urls.count(): " + str(self.db.urls.count()) + '\n'
+        while self.db.urls.count() > 0:
+            
+            db_page = self.db.urls.find_one()
+            page = db_page['url']
+            print "<-- crawling " + str(page) + '\n' 
+            self.db.urls.remove({'url': page})
+
+            driver, display = initialize_driver()
+            
+            
+            try: 
+                driver.get(page)
+
+                comment_content_elements = driver.find_elements_by_xpath('//div[contains(@id,"captions")]')
+                comment_content = None
+                if len(comment_content_elements) > 0:
+                    comment_content = comment_content_elements[0].text.encode("utf-8", "ignore")
+                print "comment_content: " + str(comment_content) + '\n'
+
+                picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/img')
+                print "picurls: " + str(picurls) + '\n'
+                if len(picurls) < 1:
+                    picurls = driver.find_elements_by_xpath('//div[contains(@id,"image")]/div/img')
+                if len(picurls) < 1:
+                    picurls = driver.find_elements_by_xpath('//div[contains(@class,"image")]/div/div/a/img')
+                if len(picurls) < 1:
+                    picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/a/img')
                 
+                if len(picurls) > 0:
+                    realpicurl = picurls[0].get_attribute('src')
+                    if realpicurl.find("gif") != -1:
+                        realpicurl = None
+                else:
+                    realpicurl = None 
+                print "realpicurl: " + str(realpicurl) + '\n'
                 
-                try: 
-                    driver.get(page)
+                links = driver.find_elements_by_xpath('//a[contains(@href,"gallery")]')
+                print "len(links): " + str(len(links)) + '\n'
+                
+                # (TODO) update mongo collection serving as a queue for workers in parallel
+                for link in links:
+                    reallink = link.get_attribute('href')
+                    #print "reallink: " + str(reallink) + '\n'
+                    if self.db.urls.find_one({'url': reallink}) is None:
+                        self.db.urls.insert({'url': reallink})
+            except:
+                print "Could not open %s" % page
+                continue
+                #raise # FOR TESTING
 
-                    comment_content_elements = driver.find_elements_by_xpath('//div[contains(@id,"captions")]')
-                    comment_content = None
-                    if len(comment_content_elements) > 0:
-                        comment_content = comment_content_elements[0].text.encode("utf-8", "ignore")
-                    print "comment_content: " + str(comment_content) + '\n'
+            
 
-                    picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/img')
-                    print "picurls: " + str(picurls) + '\n'
-                    if len(picurls) < 1:
-                        picurls = driver.find_elements_by_xpath('//div[contains(@id,"image")]/div/img')
-                    if len(picurls) < 1:
-                        picurls = driver.find_elements_by_xpath('//div[contains(@class,"image")]/div/div/a/img')
-                    if len(picurls) < 1:
-                        picurls = driver.find_elements_by_xpath('//div[contains(@class,"stipple-dottable-wrapper")]/a/img')
-                    
-                    if len(picurls) > 0:
-                        realpicurl = picurls[0].get_attribute('src')
-                        if realpicurl.find("gif") != -1:
-                            realpicurl = None
-                    else:
-                        realpicurl = None 
-                    print "realpicurl: " + str(realpicurl) + '\n'
-                    
-                    links = driver.find_elements_by_xpath('//a[contains(@href,"gallery")]')
-                    print "len(links): " + str(len(links)) + '\n'
-                    
-                    # (TODO) update mongo collection serving as a queue for workers in parallel
-                    for link in links:
-                        reallink = link.get_attribute('href')
-                        #print "reallink: " + str(reallink) + '\n'
-                        newpages.add(reallink)
-                except:
-                    print "Could not open %s" % page
-                    #continue
-                    raise # FOR TESTING
-
-                if realpicurl is not None:
-                    if comment_content is not None:
-                        self.addtoindex(comment_content, realpicurl)
-                driver.close()
-
-            pages = newpages
-            print "pages: " + str(pages) + '\n'
+            if realpicurl is not None:
+                if comment_content is not None:
+                    self.addtoindex(comment_content, realpicurl)
+            driver.close()
 
 class searcher:
     def __init__(self):
