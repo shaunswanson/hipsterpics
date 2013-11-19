@@ -35,7 +35,7 @@
             <br>
             "drive car"<br>
             <br>
-            "be cool"<br>
+            "wear hat"<br>
             <br>
             </h6>
             </center>

@@ -81,19 +81,19 @@
             </div>
             <div class = "backlink">
                 <br>
-                <center><a href="/">Try another query?</a></center>
+                <center><a href="/">Try another activity?</a></center>
             </div>
         </div>
         <div class = "footer">
             <center>
             <br><br>
             <br><br>
-            --------
-            <h3>Would you like to hire me for a machine learning role?</h3>
-            <h5>Check out my <a href="/resume">resume</a>.</h5>
-            <h5>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h5>
-            <h3>This project is open-source.</h3>
-            <h5>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h5>
+            --------<br>
+            <h5>Would you like to hire me for a machine learning role?</h5>
+            <h6>Check out my <a href="/resume">resume</a>.</h6>
+            <h6>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h6>
+            <h5>This project is open-source.</h5>
+            <h6>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h6>
             </center>
         </div>
     </body>
