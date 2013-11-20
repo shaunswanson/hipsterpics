@@ -57,7 +57,7 @@ def trainqueryhandler():
 
 bottle.debug(True)
 port = int(os.environ.get("PORT", 8082))
-bottle.run(app=app, host='0.0.0.0', port=port) # (TODO) change this away from localhost to allcatseverything.net
+bottle.run(app=app, host='0.0.0.0', port=port) 
 
 
 

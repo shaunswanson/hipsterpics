@@ -10,7 +10,7 @@ import os
 
 class searchnet:
     def __init__(self):
-        connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
+        connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase') 
         self.conn = pymongo.MongoClient(connection_string)
         self.db = self.conn.get_default_database()
         print self.db
@@ -30,6 +30,7 @@ class searchnet:
             return db_edge['strength']
         else: #hidden->url
             db_edge = self.db.nn.find_one({'hiddenid': from_node, 'picurl': to_node})
+            print "[getstrength] db_edge: " + str(db_edge) + '\n'
             if db_edge is None:
                 if layer == 0: return -0.2
                 if layer == 1: return 0
@@ -82,20 +83,30 @@ class searchnet:
     def setupnetwork(self, words, urls):
         # value lists
         self.words = words
+        print "[setupnetwork] words: " + str(self.words) + '\n'
         self.hiddenids = self.getallhiddenids(words, urls)
+        print "[setupnetwork] hiddenids: " + str(self.hiddenids) + '\n'
         self.urls = urls
+        print "[setupnetwork] urls: " + str(self.urls) + '\n'
 
         # node outputs
         self.ai = [1.0]*len(self.words)
+        print "[setupnetwork] self.ai: " + str(self.ai) + '\n'
         self.ah = [1.0]*len(self.hiddenids)
+        print "[setupnetwork] self.ah: " + str(self.ah) + '\n'
         self.ao = [1.0]*len(self.urls)
+        print "[setupnetwork] self.ao: " + str(self.ao) + '\n'
 
         # create weights matrix
         self.wi = [[self.getstrength(word, hiddenid, 0) for hiddenid in self.hiddenids] for word in self.words]
+        print "[setupnetwork] self.wi: " + str(self.wi) + '\n'
         self.wo = [[self.getstrength(hiddenid, url, 1) for url in self.urls] for hiddenid in self.hiddenids]
+        print "[setupnetwork] self.wo: " + str(self.wo) + '\n'
 
     # Takes a list of inputs, pushes them through the network, and returns the output of all the nodes in the output layer
     def feedforward(self):
+        print "[feedforward]" + '\n'
+
         # the only inputs are the query words
         for i in range(len(self.words)):
             self.ai[i] = 1.0

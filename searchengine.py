@@ -61,7 +61,7 @@ class crawler:
     def __init__(self):
         connection_string = os.environ.get("MONGOLAB_URI", 'mongodb://localhost/catbase')
         self.conn = pymongo.MongoClient(connection_string)
-        self.db = self.conn.get_default_database()
+        self.db = self.conn.heroku_app19457731
         
         # print status of database
         print "NUMBER OF EDGES IN NEURAL NETWORK: " + str(self.db.nn.count()) + '\n'
@@ -226,28 +226,27 @@ class searcher:
         results = []
         finalresults = set()
         urls = set()
+        urls2 = set()
 
         # Split the words by spaces
         words = q.split(' ')
-        #words.append('cat') #(TODO) when crawling enough add this back in
 
         print "[getunrankedmatches] words: " + str(words) + '\n'
+        isFirst = True
         for word in words:
             db_word = self.db.words.find_one({'word': word}) # assumes there's never a duplicate for a given word
             if db_word is not None:
                 for db_url in db_word['picurls']:
-                    results.append(db_url)
-                    urls.add(db_url['picurl'])
+                    if isFirst == True:
+                        urls.add(db_url['picurl'])
+                    else:
+                        urls2.add(db_url['picurl'])
+            if isFirst == False:
+                urls = urls.intersection(urls2)
+            print "[getunrankedmatches] urls: " + str(urls) + '\n'
+            isFirst = False
 
-        print "[getunrankedmatches] results: " + str(results) + '\n'
-        for result in results:
-            for url in urls:
-                counter = 0
-                for i in range(len(results)):
-                    if results[i]['picurl'] == url:
-                        counter += 1
-                if counter == len(words):
-                    finalresults.add(url)
+        finalresults = urls
 
         print "[getunrankedmatches] list(finalresults): " + str(list(finalresults)) + '\n'
         return list(finalresults)
