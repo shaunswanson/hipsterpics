@@ -1,13 +1,10 @@
 '''
 GLOBAL TODO:
 
-add weight 5 to words in the title - title needs to be scraped
-
-1) get crawler working
-    - if process crashes, start over
-2) run 50 crawlers in parallel for a night on heroku with mongo queue collection (seed with a bunch of urls)
-3) check database values upon interactions with a populated database to make sure it's running correctly. is it fun? post everywhere
-4) prettify with mark c help
+1) add weight 5 to words in the title - title needs to be scraped
+2) some queries lead to an app error due to request timeouts... mongo documents are possibly not scalable
+3) fix ui/ux
+4) add a config variable to heroku heroku config:add PHANTOMJS_DIR=./vendor/phantomjs/bin/phantomjs then where it is in the code read it from the environment like we do the port and such and set the default to your local path for phantom
 '''
 
 import urllib2
