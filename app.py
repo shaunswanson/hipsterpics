@@ -26,21 +26,14 @@ def resumepage():
 
 @bottle.route('/query', method='POST')
 def queryhandler():
-    try:
-        e = searchengine.searcher()
-        q = bottle.request.forms.get("query")
-        mywords, myurls = e.query(q)
-        s = bottle.request.environ.get('beaker.session')
-        s['mywords'] = mywords
-        s['myurls'] = myurls
-        s.save()
-        bottle.redirect('/results')
-    except TimeoutException: 
-        bottle.redirect('/TimeoutException')
-
-@bottle.route('/TimeoutException')
-def timeoutpage():
-    return bottle.template('timeout')
+    e = searchengine.searcher()
+    q = bottle.request.forms.get("query")
+    mywords, myurls = e.query(q)
+    s = bottle.request.environ.get('beaker.session')
+    s['mywords'] = mywords
+    s['myurls'] = myurls
+    s.save()
+    bottle.redirect('/results')
 
 @bottle.route('/results')
 def resultspage():
