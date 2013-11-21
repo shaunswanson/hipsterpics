@@ -17,7 +17,7 @@
         <div class="wrapper">
             <center>
             <h5>Would you like to hire me for a machine learning role?</h5>
-            <h6>Email me <a href="mailto:shaun.swanson@ayloo.net">here</a>.</h6>
+            <h6>Email me <a href="mailto:shaun.r.swanson@gmail.com">here</a>.</h6>
             <h5>This project is open-source.</h5>
             <h6>Feel free to contribute via <a href="https://github.com/drProton/hipsterpics/">Github</a>.</h6>
             <br><br>
@@ -30,7 +30,7 @@
                 <center><h5>Page 1</h5></center>
                 <center><img src="http://i.imgur.com/7Z1StSs.jpg" height=900 width=750></center>
                 <center><h5>Page 2</h5></center>
-                <center><img src="http://i.imgur.com/iUsQkyp.jpg" height=900 width=750></center>
+                <center><img src="http://i.imgur.com/7Y3P8pQ.jpg" height=900 width=750></center>
                 </div>  
             </div>
             <center>
